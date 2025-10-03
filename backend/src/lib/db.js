@@ -116,6 +116,24 @@ const promotionSchema = new mongoose.Schema({
   valid_from: Date,
   valid_to: Date,
 });
+/* =======================
+   Healthy Package Schema
+======================= */
+const healthyPackageSchema = new mongoose.Schema({
+  name: { type: String, required: true },             // Name of the healthy package (e.g., "Weight Loss Plan")
+  description: { type: String },                      // Description of the package
+  //category_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Category' }, // Link to a category if needed
+  duration_days: { type: Number, required: true },    // Duration of the plan (e.g., 30, 60 days)
+  price_cents: { type: Number, required: true },      // Price in cents (to avoid floating point issues)
+  features: [                                         // What the package includes
+    {
+      title: { type: String, required: true },        // e.g., "Nutrition Guide", "Workout Plan"
+      details: { type: String }                       // Optional description
+    }
+  ],
+  is_published: { type: Boolean, default: true },     // Visibility toggle
+  created_at: { type: Date, default: Date.now }
+});
 
 /* =======================
    Export Models
@@ -137,6 +155,7 @@ export async function initDb() {
   models.Pack = mongoose.models.Pack || mongoose.model('Pack', packSchema);
   models.Promotion = mongoose.models.Promotion || mongoose.model('Promotion', promotionSchema);
   models.PackPurchase = mongoose.models.PackPurchase || mongoose.model('PackPurchase', packPurchaseSchema);
+  models.HealthyPackage = mongoose.models.HealthyPackage || mongoose.model('HealthyPackage', healthyPackageSchema);
 
   connected = true;
   return models;

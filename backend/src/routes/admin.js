@@ -476,5 +476,58 @@ router.delete('/promos/:id', async (req, res, next) => {
     res.json({ ok: true });
   } catch (e) { next(e); }
 });
+// Healthy Packages
+router.get("/healthy-packages", async (req, res, next) => {
+  try {
+    const { HealthyPackage } = getDb();
+    const rows = await HealthyPackage.find({}).sort({ _id: -1 }).lean();
+    res.json(rows.map(hp => ({ id: hp._id, ...hp })));
+  } catch (e) { next(e); }
+});
+
+router.post("/healthy-packages", async (req, res, next) => {
+  try {
+    const { HealthyPackage } = getDb();
+    const { name, description,  duration_days, price_cents, features, is_published } = req.body;
+
+    const healthyPackage = await HealthyPackage.create({
+      name,
+      description,
+      
+      duration_days,
+      price_cents,
+      features: Array.isArray(features) ? features : [],
+      is_published: !!is_published
+    });
+
+    res.json({ id: healthyPackage._id });
+  } catch (e) { next(e); }
+});
+
+router.patch("/healthy-packages/:id", async (req, res, next) => {
+  try {
+    const { HealthyPackage } = getDb();
+    const { name, description,  duration_days, price_cents, features, is_published } = req.body;
+
+    const updateData = {};
+    if (name !== undefined) updateData.name = name;
+    if (description !== undefined) updateData.description = description;
+    if (duration_days !== undefined) updateData.duration_days = duration_days;
+    if (price_cents !== undefined) updateData.price_cents = price_cents;
+    if (Array.isArray(features)) updateData.features = features;
+    if (is_published !== undefined) updateData.is_published = !!is_published;
+
+    await HealthyPackage.findByIdAndUpdate(req.params.id, { $set: updateData });
+    res.json({ ok: true });
+  } catch (e) { next(e); }
+});
+
+router.delete("/healthy-packages/:id", async (req, res, next) => {
+  try {
+    const { HealthyPackage } = getDb();
+    await HealthyPackage.findByIdAndDelete(req.params.id);
+    res.json({ ok: true });
+  } catch (e) { next(e); }
+});
 
 export default router;
