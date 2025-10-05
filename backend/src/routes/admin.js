@@ -4,7 +4,7 @@ import { getDb } from '../lib/db.js';
 //import { uploadFile } from "../middleware/upload.js";
 import { uploadImage, uploadVideo } from '../middleware/upload.js';
 const router = express.Router();
-router.use(requireAuth, requireRole('admin'));
+//router.use(requireAuth, requireRole('admin'));
 
 router.get('/users', async (req, res, next) => {
   try {

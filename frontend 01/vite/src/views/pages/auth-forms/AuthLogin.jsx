@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 // material-ui
 import { useTheme } from '@mui/material/styles';
@@ -22,27 +23,65 @@ import AnimateButton from 'ui-component/extended/AnimateButton';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 
-// ===============================|| JWT - LOGIN ||=============================== //
-
 export default function AuthLogin() {
   const theme = useTheme();
+  const navigate = useNavigate();
 
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [checked, setChecked] = useState(true);
-
   const [showPassword, setShowPassword] = useState(false);
-  const handleClickShowPassword = () => {
-    setShowPassword(!showPassword);
-  };
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  const handleMouseDownPassword = (event) => {
-    event.preventDefault();
+  const handleClickShowPassword = () => setShowPassword(!showPassword);
+  const handleMouseDownPassword = (event) => event.preventDefault();
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    setError('');
+    setLoading(true);
+
+    try {
+      const response = await axios.post(
+        'http://localhost:4000/api/auth/login', // 🔥 your backend endpoint
+        { email, password },
+        { withCredentials: true } // allows cookies (JWT) to be sent
+      );
+
+      // Save token or user info in localStorage if needed
+      localStorage.setItem('token', response.data.token);
+      localStorage.setItem('user', JSON.stringify(response.data));
+
+      // ✅ Redirect to dashboard or home page
+      navigate('/dashboard');
+
+    } catch (err) {
+      if (err.response?.data?.error) {
+        setError(err.response.data.error);
+      } else if (err.response?.data?.errors) {
+        // Validation errors from express-validator
+        setError(err.response.data.errors.map(e => e.msg).join(', '));
+      } else {
+        setError('Une erreur est survenue, veuillez réessayer.');
+      }
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <>
+    <form onSubmit={handleLogin}>
       <FormControl fullWidth sx={{ ...theme.typography.customInput }}>
-        <InputLabel htmlFor="outlined-adornment-email-login">Email Address / Username</InputLabel>
-        <OutlinedInput id="outlined-adornment-email-login" type="email" value="info@codedthemes.com" name="email" />
+        <InputLabel htmlFor="outlined-adornment-email-login">Email</InputLabel>
+        <OutlinedInput
+          id="outlined-adornment-email-login"
+          type="email"
+          name="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          label="Email Address / Username"
+        />
       </FormControl>
 
       <FormControl fullWidth sx={{ ...theme.typography.customInput }}>
@@ -50,8 +89,9 @@ export default function AuthLogin() {
         <OutlinedInput
           id="outlined-adornment-password-login"
           type={showPassword ? 'text' : 'password'}
-          value="123456"
           name="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
           endAdornment={
             <InputAdornment position="end">
               <IconButton
@@ -72,23 +112,50 @@ export default function AuthLogin() {
       <Grid container sx={{ alignItems: 'center', justifyContent: 'space-between' }}>
         <Grid>
           <FormControlLabel
-            control={<Checkbox checked={checked} onChange={(event) => setChecked(event.target.checked)} name="checked" color="primary" />}
+            control={
+              <Checkbox
+                checked={checked}
+                onChange={(event) => setChecked(event.target.checked)}
+                name="checked"
+                color="primary"
+              />
+            }
             label="Keep me logged in"
           />
         </Grid>
         <Grid>
-          <Typography variant="subtitle1" component={Link} to="/forgot-password" color="secondary" sx={{ textDecoration: 'none' }}>
+          <Typography
+            variant="subtitle1"
+            component={Link}
+            to="/forgot-password"
+            color="secondary"
+            sx={{ textDecoration: 'none' }}
+          >
             Forgot Password?
           </Typography>
         </Grid>
       </Grid>
+
+      {error && (
+        <Typography color="error" sx={{ mt: 1, textAlign: 'center' }}>
+          {error}
+        </Typography>
+      )}
+
       <Box sx={{ mt: 2 }}>
         <AnimateButton>
-          <Button color="secondary" fullWidth size="large" type="submit" variant="contained">
-            Sign In
+          <Button
+            color="secondary"
+            fullWidth
+            size="large"
+            type="submit"
+            variant="contained"
+            disabled={loading}
+          >
+            {loading ? 'Signing in...' : 'Sign In'}
           </Button>
         </AnimateButton>
       </Box>
-    </>
+    </form>
   );
 }

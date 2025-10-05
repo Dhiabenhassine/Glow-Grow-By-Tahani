@@ -17,10 +17,10 @@ const utilities = {
   type: 'group',
   children: [
     {
-      id: 'util-typography',
-      title: 'Typography',
+      id: 'util-Categories',
+      title: 'Categories',
       type: 'item',
-      url: '/typography',
+      url: '/Categories',
       icon: icons.IconTypography,
       breadcrumbs: false
     },
