@@ -9,9 +9,11 @@ const DashboardDefault = Loadable(lazy(() => import('views/dashboard/Default')))
 
 // utilities routing
 const UtilsTypography = Loadable(lazy(() => import('views/utilities/Categories')));
-const UtilsColor = Loadable(lazy(() => import('views/utilities/Color')));
-const UtilsShadow = Loadable(lazy(() => import('views/utilities/Shadow')));
-
+const UtilsPacks = Loadable(lazy(() => import('views/utilities/Packs')));
+const UtilsCourses = Loadable(lazy(() => import('views/utilities/Courses')));
+const UtilsLessons = Loadable(lazy(() => import('views/utilities/Lessons')));
+const UtilsPromo = Loadable(lazy(() => import('views/utilities/Promo')));
+const UtilsHealthy = Loadable(lazy(() => import('views/utilities/Healthy')));
 // sample page routing
 const SamplePage = Loadable(lazy(() => import('views/sample-page')));
 
@@ -39,12 +41,25 @@ const MainRoutes = {
       element: <UtilsTypography />
     },
     {
-      path: 'color',
-      element: <UtilsColor />
+      path: 'Packs',
+      element: <UtilsPacks />
     },
     {
-      path: 'shadow',
-      element: <UtilsShadow />
+      path: 'Courses',
+      element: <UtilsCourses />
+    },
+     {
+      path: 'Lessons',
+      element: <UtilsLessons />
+    },
+     {
+      path: 'Promo',
+      element: <UtilsPromo />
+    },
+    
+     {
+      path: 'healthy',
+      element: <UtilsHealthy />
     },
     {
       path: '/sample-page',

@@ -190,7 +190,6 @@ export default function Categories() {
               onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
               fullWidth
               required
-              helperText="URL-friendly identifier (e.g., my-category)"
             />
           </Box>
         </DialogContent>

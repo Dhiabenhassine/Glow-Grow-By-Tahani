@@ -1,12 +1,14 @@
 // assets
-import { IconTypography, IconPalette, IconShadow, IconWindmill } from '@tabler/icons-react';
+import { IconCategory , IconPackages , IconCurrencyDollarCanadian , IconWindmill ,IconCurrencyLeu  ,IconPilcrow ,IconHealthRecognition } from '@tabler/icons-react';
 
 // constant
 const icons = {
-  IconTypography,
-  IconPalette,
-  IconShadow,
-  IconWindmill
+  IconCategory ,
+  IconPackages ,
+  IconCurrencyDollarCanadian ,
+  IconCurrencyLeu ,
+  IconWindmill,
+  IconPilcrow ,IconHealthRecognition
 };
 
 // ==============================|| UTILITIES MENU ITEMS ||============================== //
@@ -21,23 +23,47 @@ const utilities = {
       title: 'Categories',
       type: 'item',
       url: '/Categories',
-      icon: icons.IconTypography,
+      icon: icons.IconCategory ,
       breadcrumbs: false
     },
     {
-      id: 'util-color',
-      title: 'Color',
+      id: 'util-Packs',
+      title: 'Packs',
       type: 'item',
-      url: '/color',
-      icon: icons.IconPalette,
+      url: '/Packs',
+      icon: icons.IconPackages ,
+      breadcrumbs: false
+    }, 
+    {
+      id: 'util-Courses',
+      title: 'Courses',
+      type: 'item',
+      url: '/Courses',
+      icon: icons.IconCurrencyDollarCanadian ,
       breadcrumbs: false
     },
     {
-      id: 'util-shadow',
-      title: 'Shadow',
+      id: 'util-Lessons',
+      title: 'Lessons',
       type: 'item',
-      url: '/shadow',
-      icon: icons.IconShadow,
+      url: '/Lessons',
+      icon: icons.IconCurrencyLeu  ,
+      breadcrumbs: false
+    },
+    {
+      id: 'util-Promo',
+      title: 'Promo',
+      type: 'item',
+      url: '/Promo',
+      icon: icons.IconPilcrow ,
+      breadcrumbs: false
+    },
+    {
+      id: 'util-healthy',
+      title: 'healthy',
+      type: 'item',
+      url: '/healthy',
+      icon: icons.IconHealthRecognition ,
       breadcrumbs: false
     }
   ]
