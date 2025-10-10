@@ -42,26 +42,35 @@ router.get('/categories', async (req, res, next) => {
 });
 
 // POST category
-router.post('/categories', async (req, res, next) => {
+router.post('/categories', uploadImage.single('file'), async (req, res, next) => {
   try {
     const { Category } = getDb();
     const { name, slug } = req.body;
-    const c = await Category.create({ name, slug });
-    res.json({ id: c._id });
+
+    const image_url = req.file?.path || null; // ✅ handle uploaded image if provided
+
+    const c = await Category.create({ name, slug, image_url });
+    res.json({ id: c._id, data: c });
   } catch (e) { next(e); }
 });
 
+
 // PATCH category
-router.patch('/categories/:id', async (req, res, next) => {
+router.patch('/categories/:id', uploadImage.single('file'), async (req, res, next) => {
   try {
     const { Category } = getDb();
     const { name, slug } = req.body;
-    await Category.findByIdAndUpdate(req.params.id, { 
-      $set: { 
-        ...(name && { name }), 
-        ...(slug && { slug }),
-      } 
-    });
+    const updateData = {};
+
+    if (name) updateData.name = name;
+    if (slug) updateData.slug = slug;
+
+    // ✅ Handle new image upload (if provided)
+    if (req.file?.path) {
+      updateData.image_url = req.file.path;
+    }
+
+    await Category.findByIdAndUpdate(req.params.id, { $set: updateData });
     res.json({ ok: true });
   } catch (e) { next(e); }
 });
@@ -192,31 +201,7 @@ router.get('/courses/:id/lessons', async (req, res, next) => {
     res.json(rows.map(l => ({ id: l._id, ...l })));
   } catch (e) { next(e); }
 });
-/*
-// Create lesson with video upload
-router.post('/courses/:id/lessons', uploadFile.single("file"), async (req, res, next) => {
-  try {
- console.log("REQ.BODY:", req.body);
-  console.log("REQ.FILE:", req.file)
-      const { Lesson } = getDb();
-    const { title, content, position } = req.body;
 
-    const videoUrl = req.file ? req.file?.secure_url || null : null;
-
-    const l = await Lesson.create({
-      course_id: req.params.id,
-      title,
-      video_url: videoUrl,
-      content: content || '',
-      position: position || 0
-    });
-console.log("Created lesson:", l);
-    res.json({ success: true, id: l._id, data: l });
-  } catch (e) { 
-    next(e); 
-  }
-});
-*/
 // Create lesson without video 
 router.post('/courses/:id/lessons', async (req, res, next) => {
   try {
@@ -239,9 +224,7 @@ router.post('/courses/:id/lessons', async (req, res, next) => {
   }
 });
 //Upload Videp
-router.patch(
-  '/courses/lessons/:lessonId/video',
-  uploadVideo.single('file'),
+router.patch('/courses/lessons/:lessonId/video',uploadVideo.single('file'),
   async (req, res, next) => {
     try {
       const { Lesson } = getDb();
@@ -318,34 +301,7 @@ router.get('/courses/:id/images', async (req, res, next) => {
   }
 });
 
-/*
-// Upload image for a course
-router.post('/courses/:id/images', uploadFile.single("file"), async (req, res, next) => {
-  try {
-    const { CourseImage } = getDb();
-console.log("REQ.FILE:", req.file);
-console.log("REQ.BODY:", req.body);
 
-   console.log("Headers:", req.headers["content-type"]);
-console.log("Body keys:", Object.keys(req.body));
-
-
-const fileUrl = req.file?.path || req.file?.secure_url || null;
-
-    const newImage = await CourseImage.create({
-      course_id: req.params.id,
-      image_url: fileUrl,
-      pos: 1, // you can later add sorting/ordering logic
-    });
-console.log("Uploaded image:", newImage);
-console.log("File URL:", fileUrl);
-    res.json({ success: true, data: newImage });
-  } catch (err) {
-    next(err);
-  }
-});
-*/
-// Upload image for a course
 // Upload image for a course
 router.post('/courses/:id/images', uploadImage.single("file"), async (req, res, next) => {
   try {
@@ -375,62 +331,7 @@ router.delete('/images/:imageId', async (req, res, next) => {
     res.json({ ok: true });
   } catch (e) { next(e); }
 });
-/*
-// Packs
-router.get('/packs', async (req, res, next) => {
-  try {
-    const { Pack } = getDb();
-    const rows = await Pack.find({}).sort({ _id: -1 }).lean();
-    res.json(rows.map(p => ({ id: p._id, ...p })));
-  } catch (e) { next(e); }
-});
 
-router.post('/packs', async (req, res, next) => {
-  try {
-    const { Pack, PackCourse } = getDb();
-    const { name, description, price_cents, is_published, course_ids = [] } = req.body;
-    const pack = await Pack.create({ name, description, price_cents, is_published: !!is_published });
-
-    if (Array.isArray(course_ids)) {
-      for (const cid of course_ids) {
-        await PackCourse.create({ pack_id: pack._id, course_id: cid });
-      }
-    }
-
-    res.json({ id: pack._id });
-  } catch (e) { next(e); }
-});
-
-router.patch('/packs/:id', async (req, res, next) => {
-  try {
-    const { Pack, PackCourse } = getDb();
-    const { name, description, price_cents, is_published, course_ids } = req.body;
-    const updateData = {};
-    ['name', 'description', 'price_cents'].forEach(f => {
-      if (req.body[f] !== undefined) updateData[f] = req.body[f];
-    });
-    if (is_published !== undefined) updateData.is_published = !!is_published;
-
-    await Pack.findByIdAndUpdate(req.params.id, { $set: updateData });
-
-    if (Array.isArray(course_ids)) {
-      await PackCourse.deleteMany({ pack_id: req.params.id });
-      for (const cid of course_ids) {
-        await PackCourse.create({ pack_id: req.params.id, course_id: cid });
-      }
-    }
-    res.json({ ok: true });
-  } catch (e) { next(e); }
-});
-
-router.delete('/packs/:id', async (req, res, next) => {
-  try {
-    const { Pack } = getDb();
-    await Pack.findByIdAndDelete(req.params.id);
-    res.json({ ok: true });
-  } catch (e) { next(e); }
-});
-*/
 // Promotions
 router.get('/promos', async (req, res, next) => {
   try {
@@ -443,14 +344,12 @@ router.get('/promos', async (req, res, next) => {
 router.post('/promos', async (req, res, next) => {
   try {
     const { Promotion } = getDb();
-    const { code, type, value, valid_from, valid_to, max_redemptions } = req.body;
+    const {  type, value, valid_from, valid_to } = req.body;
     const promo = await Promotion.create({
-      code: code.toUpperCase(),
       type,
       value,
       valid_from,
       valid_to,
-      max_redemptions
     });
     res.json({ id: promo._id });
   } catch (e) { next(e); }
@@ -460,7 +359,7 @@ router.patch('/promos/:id', async (req, res, next) => {
   try {
     const { Promotion } = getDb();
     const updateData = {};
-    ['code', 'type', 'value', 'valid_from', 'valid_to', 'max_redemptions', 'redemptions'].forEach(f => {
+    [ 'type', 'value', 'valid_from', 'valid_to'].forEach(f => {
       if (req.body[f] !== undefined)
         updateData[f] = f === 'code' ? req.body[f].toUpperCase() : req.body[f];
     });
@@ -481,53 +380,111 @@ router.get("/healthy-packages", async (req, res, next) => {
   try {
     const { HealthyPackage } = getDb();
     const rows = await HealthyPackage.find({}).sort({ _id: -1 }).lean();
-    res.json(rows.map(hp => ({ id: hp._id, ...hp })));
-  } catch (e) { next(e); }
+    res.json(rows.map((hp) => ({ id: hp._id, ...hp })));
+  } catch (e) {
+    next(e);
+  }
 });
 
-router.post("/healthy-packages", async (req, res, next) => {
-  try {
-    const { HealthyPackage } = getDb();
-    const { name, description,  duration_days, price_cents, features, is_published } = req.body;
+/* ==============================
+   CREATE Healthy Package (with multiple image upload)
+============================== */
+router.post(  "/healthy-packages",uploadImage.array("images"), // ✅ no file limit
+  async (req, res, next) => {
+    try {
+      const { HealthyPackage } = getDb();
+      const { name, description, duration_days, price_cents, features, is_published } = req.body;
 
-    const healthyPackage = await HealthyPackage.create({
-      name,
-      description,
-      
-      duration_days,
-      price_cents,
-      features: Array.isArray(features) ? features : [],
-      is_published: !!is_published
-    });
+      // Handle uploaded images
+      const uploadedImages = (req.files || []).map((file, index) => ({
+        url: file.path || file.secure_url,
+        caption: `Image ${index + 1}`,
+        position: index,
+      }));
 
-    res.json({ id: healthyPackage._id });
-  } catch (e) { next(e); }
-});
+      // Parse features if sent as a string (JSON format)
+      const parsedFeatures =
+        typeof features === "string" ? JSON.parse(features) : features || [];
 
-router.patch("/healthy-packages/:id", async (req, res, next) => {
-  try {
-    const { HealthyPackage } = getDb();
-    const { name, description,  duration_days, price_cents, features, is_published } = req.body;
+      const healthyPackage = await HealthyPackage.create({
+        name,
+        description,
+        duration_days,
+        price_cents,
+        features: Array.isArray(parsedFeatures) ? parsedFeatures : [],
+        images: uploadedImages,
+        is_published: !!is_published,
+      });
 
-    const updateData = {};
-    if (name !== undefined) updateData.name = name;
-    if (description !== undefined) updateData.description = description;
-    if (duration_days !== undefined) updateData.duration_days = duration_days;
-    if (price_cents !== undefined) updateData.price_cents = price_cents;
-    if (Array.isArray(features)) updateData.features = features;
-    if (is_published !== undefined) updateData.is_published = !!is_published;
+      res.json({ success: true, id: healthyPackage._id, data: healthyPackage });
+    } catch (e) {
+      next(e);
+    }
+  }
+);
 
-    await HealthyPackage.findByIdAndUpdate(req.params.id, { $set: updateData });
-    res.json({ ok: true });
-  } catch (e) { next(e); }
-});
+/* ==============================
+   UPDATE Healthy Package (with multiple image upload)
+============================== */
+router.patch("/healthy-packages/:id",  uploadImage.array("images"), // ✅ unlimited
+  async (req, res, next) => {
+    try {
+      const { HealthyPackage } = getDb();
+      const { name, description, duration_days, price_cents, features, is_published } = req.body;
 
+      const updateData = {};
+      if (name !== undefined) updateData.name = name;
+      if (description !== undefined) updateData.description = description;
+      if (duration_days !== undefined) updateData.duration_days = duration_days;
+      if (price_cents !== undefined) updateData.price_cents = price_cents;
+      if (is_published !== undefined) updateData.is_published = !!is_published;
+
+      // Handle features
+      if (features) {
+        const parsedFeatures =
+          typeof features === "string" ? JSON.parse(features) : features;
+        if (Array.isArray(parsedFeatures)) updateData.features = parsedFeatures;
+      }
+
+      // Handle new uploaded images
+      if (req.files && req.files.length > 0) {
+        const uploadedImages = req.files.map((file, index) => ({
+          url: file.path || file.secure_url,
+          caption: `Image ${index + 1}`,
+          position: index,
+        }));
+        updateData.images = uploadedImages;
+      }
+
+      const updated = await HealthyPackage.findByIdAndUpdate(
+        req.params.id,
+        { $set: updateData },
+        { new: true }
+      );
+
+      if (!updated) {
+        return res.status(404).json({ success: false, message: "Healthy Package not found" });
+      }
+
+      res.json({ success: true, data: updated });
+    } catch (e) {
+      next(e);
+    }
+  }
+);
+
+/* ==============================
+   DELETE Healthy Package
+============================== */
 router.delete("/healthy-packages/:id", async (req, res, next) => {
   try {
     const { HealthyPackage } = getDb();
     await HealthyPackage.findByIdAndDelete(req.params.id);
-    res.json({ ok: true });
-  } catch (e) { next(e); }
+    res.json({ success: true });
+  } catch (e) {
+    next(e);
+  }
 });
+
 
 export default router;

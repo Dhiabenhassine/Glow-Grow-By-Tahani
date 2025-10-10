@@ -10,13 +10,14 @@ import userRoutes from './routes/users.js';
 import subscriptionRoutes from './routes/subscriptions.js';
 import adminRoutes from './routes/admin.js';
 import { errorHandler } from './middleware/error.js';
+import bodyParser from 'body-parser';
 
 const app = express();
 app.use(helmet());
 app.use(express.json());
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
-
+app.use(bodyParser.json())
 const CORS_ORIGIN = process.env.CORS_ORIGIN || 'http://localhost:3000';
 app.use(cors({ origin: CORS_ORIGIN, credentials: true }));
 

@@ -65,6 +65,14 @@ const utilities = {
       url: '/healthy',
       icon: icons.IconHealthRecognition ,
       breadcrumbs: false
+    },
+    {
+      id: 'util-users',
+      title: 'users',
+      type: 'item',
+      url: '/users',
+      icon: icons.IconHealthRecognition ,
+      breadcrumbs: false
     }
   ]
 };

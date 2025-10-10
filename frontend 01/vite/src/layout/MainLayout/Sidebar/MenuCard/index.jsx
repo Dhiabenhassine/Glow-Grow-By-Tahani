@@ -86,33 +86,17 @@ function MenuCard() {
       <Box sx={{ p: 2 }}>
         <List disablePadding sx={{ pb: 1 }}>
           <ListItem alignItems="flex-start" disableGutters disablePadding>
-            <ListItemAvatar sx={{ mt: 0 }}>
-              <Avatar
-                variant="rounded"
-                sx={{
-                  ...theme.typography.commonAvatar,
-                  ...theme.typography.largeAvatar,
-                  color: 'primary.main',
-                  border: 'none',
-                  borderColor: 'primary.main',
-                  bgcolor: 'background.paper'
-                }}
-              >
-                <TableChartOutlinedIcon fontSize="inherit" />
-              </Avatar>
-            </ListItemAvatar>
-            <ListItemText
-              sx={{ mt: 0 }}
-              primary={
-                <Typography variant="subtitle1" sx={{ color: 'primary.800' }}>
-                  Get Extra Space
-                </Typography>
-              }
-              secondary={<Typography variant="caption"> 28/23 GB</Typography>}
-            />
+           <ListItemText
+  primary={
+    <Typography variant="h6" sx={{ color: 'primary.main', fontWeight: 'bold' }}>
+      GLOW & GROW BY TAHANI
+    </Typography>
+  }
+/>
+
+          
           </ListItem>
         </List>
-        <LinearProgressWithLabel value={80} />
       </Box>
     </Card>
   );

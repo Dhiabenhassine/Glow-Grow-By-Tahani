@@ -18,9 +18,7 @@ export default function Footer() {
     >
       <Typography variant="caption">
         &copy; All rights reserved{' '}
-        <Typography component={Link} href="https://codedthemes.com/about-us/" underline="hover" target="_blank" color="secondary.main">
-          CodedThemes
-        </Typography>
+       
       </Typography>
       <Stack direction="row" sx={{ gap: 1.5, alignItems: 'center', justifyContent: 'space-between' }}>
         <Link
@@ -31,7 +29,7 @@ export default function Footer() {
           variant="caption"
           color="text.primary"
         >
-          Twitter
+          Instagram
         </Link>
         <Link
           component={RouterLink}
@@ -41,7 +39,7 @@ export default function Footer() {
           variant="caption"
           color="text.primary"
         >
-          Discord
+          FaceBook
         </Link>
       </Stack>
     </Stack>

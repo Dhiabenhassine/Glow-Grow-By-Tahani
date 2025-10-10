@@ -11,6 +11,8 @@ const userSchema = new mongoose.Schema({
   email: { type: String, unique: true, required: true },
   password_hash: String,
   name: String,
+  resetPasswordToken: String,
+resetPasswordExpires: Date,
   role: { type: String, default: 'user' },
   created_at: { type: Date, default: Date.now }
 });
@@ -21,6 +23,7 @@ const userSchema = new mongoose.Schema({
 const categorySchema = new mongoose.Schema({
   name: String,
   slug: String,
+  image_url: { type: String },
 });
 
 /* =======================
@@ -41,6 +44,7 @@ const lessonSchema = new mongoose.Schema({
 });
 
 const courseSchema = new mongoose.Schema({
+  pack_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Pack', required: true },
   title: String,
   description: String,
   category_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Category' },
@@ -67,6 +71,7 @@ const packSchema = new mongoose.Schema({
       price_cents: { type: Number, required: true },
     }
   ],
+  courses: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Course' }],
 
   created_at: { type: Date, default: Date.now }
 });
@@ -83,7 +88,7 @@ const packPurchaseSchema = new mongoose.Schema({
 });
 
 // Ensure user can only purchase a given pack once
-packPurchaseSchema.index({ user_id: 1, pack_id: 1 }, { unique: true });
+//packPurchaseSchema.index({ user_id: 1, pack_id: 1 }, { unique: true });
 
 /* =======================
    Subscription Schema
@@ -120,20 +125,27 @@ const promotionSchema = new mongoose.Schema({
    Healthy Package Schema
 ======================= */
 const healthyPackageSchema = new mongoose.Schema({
-  name: { type: String, required: true },             // Name of the healthy package (e.g., "Weight Loss Plan")
+  name: { type: String, required: true },             // e.g., "Weight Loss Plan"
   description: { type: String },                      // Description of the package
-  //category_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Category' }, // Link to a category if needed
-  duration_days: { type: Number, required: true },    // Duration of the plan (e.g., 30, 60 days)
-  price_cents: { type: Number, required: true },      // Price in cents (to avoid floating point issues)
-  features: [                                         // What the package includes
+  duration_days: { type: Number, required: true },    // Duration (e.g., 30, 60)
+  price_cents: { type: Number, required: true },      // Price in cents
+  features: [                                         // List of package features
     {
-      title: { type: String, required: true },        // e.g., "Nutrition Guide", "Workout Plan"
+      title: { type: String, required: true },        // e.g., "Nutrition Guide"
       details: { type: String }                       // Optional description
+    }
+  ],
+  images: [                                           // Multiple image URLs
+    {
+      url: { type: String, required: true },          // Full URL or path to image
+      caption: { type: String },                      // Optional caption or alt text
+      position: { type: Number, default: 0 }          // For ordering
     }
   ],
   is_published: { type: Boolean, default: true },     // Visibility toggle
   created_at: { type: Date, default: Date.now }
 });
+
 
 /* =======================
    Export Models

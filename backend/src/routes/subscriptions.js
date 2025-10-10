@@ -5,7 +5,6 @@ import dotenv from 'dotenv';
 import paypal from '@paypal/checkout-server-sdk';
 
 dotenv.config();
-
 const router = express.Router();
 
 /* =======================
@@ -15,6 +14,7 @@ function environment() {
   const clientId = process.env.PAYPAL_CLIENT_ID;
   const clientSecret = process.env.PAYPAL_CLIENT_SECRET;
 
+  // FIXED: Sandbox for development/testing, Live for production
   return process.env.NODE_ENV === 'production'
     ? new paypal.core.LiveEnvironment(clientId, clientSecret)
     : new paypal.core.SandboxEnvironment(clientId, clientSecret);
@@ -23,6 +23,7 @@ function environment() {
 function paypalClient() {
   return new paypal.core.PayPalHttpClient(environment());
 }
+console.log(`🟢 PayPal running in: ${process.env.NODE_ENV === 'production' ? 'LIVE' : 'SANDBOX'}`);
 
 /* =======================
    Subscription Logic
@@ -68,7 +69,7 @@ router.post('/subscribe', requireAuth, async (req, res) => {
     const client = paypalClient();
     const { packId, planLabel } = req.body;
     const userId = req.user.id;
-    const { Pack, PackPurchase } = getDb();
+    const { Pack, PackPurchase, Promotion } = getDb();
 
     // 1. Find the pack
     const pack = await Pack.findById(packId);
@@ -78,16 +79,40 @@ router.post('/subscribe', requireAuth, async (req, res) => {
     const plan = pack.plans.find(p => p.label === planLabel);
     if (!plan) return res.status(400).json({ message: 'Plan not found in pack' });
 
-    // 3. Create a pending purchase record
+    let finalPriceCents = plan.price_cents;
+    let activePromo = null;
+
+    // 3. Check if a promotion is currently active
+    const now = new Date();
+    activePromo = await Promotion.findOne({
+      valid_from: { $lte: now },
+      valid_to: { $gte: now }
+    });
+
+    if (activePromo) {
+      // Apply percentage-based or fixed-value discount automatically
+      if (activePromo.value > 0) {
+        if (activePromo.value <= 100) {
+          // Treat as percentage discount
+          finalPriceCents = Math.round(plan.price_cents * (1 - activePromo.value / 100));
+        } else {
+          // Treat as fixed discount in cents
+          finalPriceCents = Math.max(plan.price_cents - activePromo.value, 0);
+        }
+      }
+    }
+
+    // 4. Create a pending purchase record
     const purchase = await PackPurchase.create({
       user_id: userId,
       pack_id: packId,
-      amount_cents: plan.price_cents,
+      amount_cents: finalPriceCents,
       currency: 'USD',
-      status: 'pending'
+      status: 'pending',
+      promotion_applied: activePromo ? activePromo.type : null // store which promo applied
     });
 
-    // 4. Create PayPal order
+    // 5. Create PayPal order
     const orderRequest = new paypal.orders.OrdersCreateRequest();
     orderRequest.prefer('return=representation');
     orderRequest.requestBody({
@@ -96,9 +121,9 @@ router.post('/subscribe', requireAuth, async (req, res) => {
         {
           amount: {
             currency_code: 'USD',
-            value: (plan.price_cents / 100).toFixed(2)
+            value: (finalPriceCents / 100).toFixed(2)
           },
-          description: `${pack.name} - ${plan.label}`,
+          description: `${pack.name} - ${plan.label}${activePromo ? ` (Promo: ${activePromo.type})` : ''}`,
           custom_id: JSON.stringify({ userId, planLabel }),
           invoice_id: packId.toString()
         }
@@ -112,16 +137,21 @@ router.post('/subscribe', requireAuth, async (req, res) => {
 
     const order = await client.execute(orderRequest);
 
-    // 5. Save PayPal order ID
+    // 6. Save PayPal order ID
     purchase.paypal_order_id = order.result.id;
     await purchase.save();
 
-    res.json(order.result);
+    res.json({
+      ...order.result,
+      applied_promotion: activePromo ? activePromo.type : null,
+      final_price_usd: (finalPriceCents / 100).toFixed(2)
+    });
   } catch (err) {
     console.error('Subscribe error:', err);
     res.status(500).json({ error: err.message });
   }
 });
+
 
 /* =======================
    PayPal Webhook
@@ -144,8 +174,10 @@ router.post('/paypal-webhook', async (req, res) => {
       } catch {
         console.warn('⚠️ Invalid custom_id format');
       }
-console.log('user',userId)
-console.log('label',planLabel)
+      
+      console.log('user', userId);
+      console.log('label', planLabel);
+      
       const packId = purchaseUnit.invoice_id;
 
       if (!userId || !packId || !planLabel) {

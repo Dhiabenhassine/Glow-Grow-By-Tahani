@@ -14,6 +14,7 @@ const UtilsCourses = Loadable(lazy(() => import('views/utilities/Courses')));
 const UtilsLessons = Loadable(lazy(() => import('views/utilities/Lessons')));
 const UtilsPromo = Loadable(lazy(() => import('views/utilities/Promo')));
 const UtilsHealthy = Loadable(lazy(() => import('views/utilities/Healthy')));
+const UtilsUsers = Loadable(lazy(() => import('views/utilities/Users')));
 // sample page routing
 const SamplePage = Loadable(lazy(() => import('views/sample-page')));
 
@@ -64,6 +65,11 @@ const MainRoutes = {
     {
       path: '/sample-page',
       element: <SamplePage />
+    }
+    ,
+    {
+      path: '/Users',
+      element: <UtilsUsers />
     }
   ]
 };

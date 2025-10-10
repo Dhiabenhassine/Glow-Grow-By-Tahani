@@ -20,6 +20,8 @@ import Alert from "@mui/material/Alert"
 import EditIcon from "@mui/icons-material/Edit"
 import DeleteIcon from "@mui/icons-material/Delete"
 import AddIcon from "@mui/icons-material/Add"
+import ImageIcon from "@mui/icons-material/Image"
+import CloseIcon from "@mui/icons-material/Close"
 
 export default function Categories() {
   const [categories, setCategories] = useState([])
@@ -28,8 +30,11 @@ export default function Categories() {
   const [openDialog, setOpenDialog] = useState(false)
   const [editingCategory, setEditingCategory] = useState(null)
   const [formData, setFormData] = useState({ name: "", slug: "" })
+  const [selectedFile, setSelectedFile] = useState(null)
+  const [imagePreview, setImagePreview] = useState(null)
+  const [viewingImage, setViewingImage] = useState(null)
 
-  const API_BASE =  "http://localhost:4000/api/admin"
+  const API_BASE = "http://localhost:4000/api/admin"
 
   useEffect(() => {
     fetchCategories()
@@ -54,10 +59,13 @@ export default function Categories() {
     if (category) {
       setEditingCategory(category)
       setFormData({ name: category.name, slug: category.slug })
+      setImagePreview(category.image_url || null)
     } else {
       setEditingCategory(null)
       setFormData({ name: "", slug: "" })
+      setImagePreview(null)
     }
+    setSelectedFile(null)
     setOpenDialog(true)
   }
 
@@ -65,22 +73,41 @@ export default function Categories() {
     setOpenDialog(false)
     setEditingCategory(null)
     setFormData({ name: "", slug: "" })
+    setSelectedFile(null)
+    setImagePreview(null)
+  }
+
+  const handleFileChange = (e) => {
+    const file = e.target.files?.[0]
+    if (file) {
+      setSelectedFile(file)
+      const reader = new FileReader()
+      reader.onloadend = () => {
+        setImagePreview(reader.result)
+      }
+      reader.readAsDataURL(file)
+    }
   }
 
   const handleSubmit = async () => {
     try {
+      const formDataToSend = new FormData()
+      formDataToSend.append("name", formData.name)
+      formDataToSend.append("slug", formData.slug)
+      if (selectedFile) {
+        formDataToSend.append("file", selectedFile)
+      }
+
       if (editingCategory) {
         const response = await fetch(`${API_BASE}/categories/${editingCategory.id}`, {
           method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(formData),
+          body: formDataToSend,
         })
         if (!response.ok) throw new Error("Failed to update category")
       } else {
         const response = await fetch(`${API_BASE}/categories`, {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(formData),
+          body: formDataToSend,
         })
         if (!response.ok) throw new Error("Failed to create category")
       }
@@ -103,6 +130,14 @@ export default function Categories() {
     } catch (err) {
       setError(err instanceof Error ? err.message : "An error occurred")
     }
+  }
+
+  const handleViewImage = (imageUrl, categoryName) => {
+    setViewingImage({ url: imageUrl, name: categoryName })
+  }
+
+  const handleCloseImageViewer = () => {
+    setViewingImage(null)
   }
 
   if (loading) {
@@ -137,6 +172,7 @@ export default function Categories() {
         <Table>
           <TableHead>
             <TableRow>
+              <TableCell sx={{ fontWeight: 600 }}>Image</TableCell>
               <TableCell sx={{ fontWeight: 600 }}>Name</TableCell>
               <TableCell sx={{ fontWeight: 600 }}>Slug</TableCell>
               <TableCell align="right" sx={{ fontWeight: 600 }}>
@@ -147,13 +183,43 @@ export default function Categories() {
           <TableBody>
             {categories.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={3} align="center" sx={{ py: 4 }}>
+                <TableCell colSpan={4} align="center" sx={{ py: 4 }}>
                   <p className="text-muted-foreground">No categories found</p>
                 </TableCell>
               </TableRow>
             ) : (
               categories.map((category) => (
                 <TableRow key={category.id} hover>
+                  <TableCell>
+                    {category.image_url ? (
+                      <img
+                        src={category.image_url || "/placeholder.svg"}
+                        alt={category.name}
+                        style={{
+                          width: 50,
+                          height: 50,
+                          objectFit: "cover",
+                          borderRadius: 4,
+                          cursor: "pointer",
+                        }}
+                        onClick={() => handleViewImage(category.image_url, category.name)}
+                      />
+                    ) : (
+                      <Box
+                        sx={{
+                          width: 50,
+                          height: 50,
+                          bgcolor: "grey.200",
+                          borderRadius: 1,
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                        }}
+                      >
+                        <ImageIcon sx={{ color: "grey.400" }} />
+                      </Box>
+                    )}
+                  </TableCell>
                   <TableCell>{category.name}</TableCell>
                   <TableCell>
                     <code className="text-sm text-primary">{category.slug}</code>
@@ -191,6 +257,21 @@ export default function Categories() {
               fullWidth
               required
             />
+            <Box>
+              <Button variant="outlined" component="label" startIcon={<ImageIcon />} fullWidth>
+                {selectedFile ? selectedFile.name : "Upload Image"}
+                <input type="file" hidden accept="image/*" onChange={handleFileChange} />
+              </Button>
+              {imagePreview && (
+                <Box sx={{ mt: 2, textAlign: "center" }}>
+                  <img
+                    src={imagePreview || "/placeholder.svg"}
+                    alt="Preview"
+                    style={{ maxWidth: "100%", maxHeight: 200, borderRadius: 8 }}
+                  />
+                </Box>
+              )}
+            </Box>
           </Box>
         </DialogContent>
         <DialogActions sx={{ px: 3, pb: 2 }}>
@@ -199,6 +280,24 @@ export default function Categories() {
             {editingCategory ? "Update" : "Create"}
           </Button>
         </DialogActions>
+      </Dialog>
+
+      <Dialog open={!!viewingImage} onClose={handleCloseImageViewer} maxWidth="md" fullWidth>
+        <DialogTitle sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+          {viewingImage?.name}
+          <IconButton onClick={handleCloseImageViewer} size="small">
+            <CloseIcon />
+          </IconButton>
+        </DialogTitle>
+        <DialogContent>
+          <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
+            <img
+              src={viewingImage?.url || "/placeholder.svg"}
+              alt={viewingImage?.name}
+              style={{ maxWidth: "100%", maxHeight: "70vh", objectFit: "contain" }}
+            />
+          </Box>
+        </DialogContent>
       </Dialog>
     </Box>
   )

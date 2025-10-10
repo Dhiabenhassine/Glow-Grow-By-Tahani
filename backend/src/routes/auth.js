@@ -4,7 +4,10 @@ import bcrypt from 'bcryptjs';
 import { body, validationResult } from 'express-validator';
 import { getDb } from '../lib/db.js';
 import { signJwt } from '../utils/jwt.js';
-
+import crypto from 'crypto';
+import nodemailer from 'nodemailer';
+import dotenv from 'dotenv';
+dotenv.config();
 const router = express.Router();
 
 /* =======================
@@ -128,5 +131,71 @@ router.post('/logout', (req, res) => {
   res.clearCookie('token');
   res.json({ ok: true });
 });
+router.post('/forgot-password', async (req, res, next) => {
+  try {
+    const { email } = req.body;
+    const { User } = getDb();
 
+    const user = await User.findOne({ email });
+    if (!user) return res.status(404).json({ error: 'Utilisateur non trouvé' });
+
+    // Generate token
+    const token = crypto.randomBytes(20).toString('hex');
+    user.resetPasswordToken = token;
+    user.resetPasswordExpires = Date.now() + 3600000; // 1 hour
+    await user.save();
+
+    // Send email
+    const transporter = nodemailer.createTransport({
+      service: 'Gmail', // or your email provider
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
+      },
+    });
+
+    const resetUrl = `http://yourfrontend.com/reset-password/${token}`;
+console.log('token', token)
+    await transporter.sendMail({
+      to: user.email,
+      subject: 'Réinitialisation du mot de passe',
+      html: `<p>Vous avez demandé une réinitialisation de mot de passe.</p>
+             <p>Cliquez <a href="${resetUrl}">ici</a> pour réinitialiser votre mot de passe.</p>`
+    });
+
+    res.json({ ok: true, message: 'Email de réinitialisation envoyé' });
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.post('/reset-password/:token', async (req, res, next) => {
+  try {
+    const { token } = req.params;
+    const { password } = req.body;
+    const { User } = getDb();
+
+    const user = await User.findOne({
+      resetPasswordToken: token,
+      resetPasswordExpires: { $gt: Date.now() } // token not expired
+    });
+
+    if (!user) return res.status(400).json({ error: 'Token invalide ou expiré' });
+
+    // Hash new password
+if (!password || typeof password !== 'string') {
+  return res.status(400).json({ error: 'Mot de passe invalide' });
+}
+user.password_hash = await bcrypt.hash(String(password), 10);
+
+    // Clear reset token
+    user.resetPasswordToken = undefined;
+    user.resetPasswordExpires = undefined;
+
+    await user.save();
+    res.json({ ok: true, message: 'Mot de passe réinitialisé avec succès' });
+  } catch (err) {
+    next(err);
+  }
+});
 export default router;
