@@ -47,7 +47,7 @@ export default function LessonsManagement() {
     position: "",
   })
 
-  const API_BASE = "http://localhost:4000/api/admin"
+  const API_BASE = import.meta.env.VITE_API_BASE_ADMIN || "http://localhost:27017"
 
   useEffect(() => {
     fetchCourses()
@@ -61,9 +61,19 @@ export default function LessonsManagement() {
     }
   }, [selectedCourseId])
 
+  const getAuthHeaders = () => {
+    const token = localStorage.getItem("token")
+    return token ? { Authorization: `Bearer ${token}` } : {}
+  }
+
   const fetchCourses = async () => {
     try {
-      const response = await fetch(`${API_BASE}/courses`)
+      const response = await fetch(`${API_BASE}/courses`, {
+        headers: {
+          "Content-Type": "application/json",
+          ...getAuthHeaders(),
+        },
+      })
       if (!response.ok) throw new Error("Failed to fetch courses")
       const data = await response.json()
       setCourses(data)
@@ -75,7 +85,12 @@ export default function LessonsManagement() {
   const fetchLessons = async () => {
     try {
       setLoading(true)
-      const response = await fetch(`${API_BASE}/courses/${selectedCourseId}/lessons`)
+      const response = await fetch(`${API_BASE}/courses/${selectedCourseId}/lessons`, {
+        headers: {
+          "Content-Type": "application/json",
+          ...getAuthHeaders(),
+        },
+      })
       if (!response.ok) throw new Error("Failed to fetch lessons")
       const data = await response.json()
       setLessons(data)
@@ -139,6 +154,9 @@ export default function LessonsManagement() {
 
       const response = await fetch(`${API_BASE}/courses/lessons/${editingLesson.id}/video`, {
         method: "PATCH",
+        headers: {
+          ...getAuthHeaders(),
+        },
         body: formData,
       })
 
@@ -168,7 +186,10 @@ export default function LessonsManagement() {
 
       const response = await fetch(url, {
         method,
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          ...getAuthHeaders(),
+        },
         body: JSON.stringify({
           ...formData,
           position: Number(formData.position),
@@ -191,6 +212,9 @@ export default function LessonsManagement() {
     try {
       const response = await fetch(`${API_BASE}/courses/lessons/${id}`, {
         method: "DELETE",
+        headers: {
+          ...getAuthHeaders(),
+        },
       })
       if (!response.ok) throw new Error("Failed to delete lesson")
       fetchLessons()

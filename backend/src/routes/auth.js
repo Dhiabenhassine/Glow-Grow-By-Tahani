@@ -7,6 +7,8 @@ import { signJwt } from '../utils/jwt.js';
 import crypto from 'crypto';
 import nodemailer from 'nodemailer';
 import dotenv from 'dotenv';
+import { requireAuth } from '../middleware/auth.js';
+
 dotenv.config();
 const router = express.Router();
 

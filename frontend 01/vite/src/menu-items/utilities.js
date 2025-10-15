@@ -1,5 +1,5 @@
 // assets
-import { IconCategory , IconPackages , IconCurrencyDollarCanadian , IconWindmill ,IconCurrencyLeu  ,IconPilcrow ,IconHealthRecognition } from '@tabler/icons-react';
+import { IconCategory , IconPackages , IconCurrencyDollarCanadian , IconWindmill ,IconCurrencyLeu  ,IconPilcrow ,IconHealthRecognition,IconReplaceUser  } from '@tabler/icons-react';
 
 // constant
 const icons = {
@@ -8,7 +8,9 @@ const icons = {
   IconCurrencyDollarCanadian ,
   IconCurrencyLeu ,
   IconWindmill,
-  IconPilcrow ,IconHealthRecognition
+  IconPilcrow ,
+  IconHealthRecognition,
+  IconReplaceUser 
 };
 
 // ==============================|| UTILITIES MENU ITEMS ||============================== //
@@ -60,7 +62,7 @@ const utilities = {
     },
     {
       id: 'util-healthy',
-      title: 'healthy',
+      title: 'Healthy',
       type: 'item',
       url: '/healthy',
       icon: icons.IconHealthRecognition ,
@@ -68,10 +70,10 @@ const utilities = {
     },
     {
       id: 'util-users',
-      title: 'users',
+      title: 'Users',
       type: 'item',
       url: '/users',
-      icon: icons.IconHealthRecognition ,
+      icon: icons.IconReplaceUser  ,
       breadcrumbs: false
     }
   ]

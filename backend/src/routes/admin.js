@@ -1,20 +1,59 @@
 import express from 'express';
 import { requireAuth, requireRole } from '../middleware/auth.js';
+import { v2 as cloudinary } from "cloudinary";
 import { getDb } from '../lib/db.js';
-//import { uploadFile } from "../middleware/upload.js";
 import { uploadImage, uploadVideo } from '../middleware/upload.js';
 const router = express.Router();
-//router.use(requireAuth, requireRole('admin'));
+router.use(requireAuth, requireRole('admin'));
+// ✅ Check subscription status when a user logs in
+async function checkSubscriptionOnLogin(userId) {
+  const { Subscription } = getDb();
+  const now = new Date();
 
-router.get('/users', async (req, res, next) => {
+  // Use findOne instead of find
+  const subscription = await Subscription.findOne({ user_id: userId });
+
+  if (subscription && subscription.status === 'active') {
+    if (subscription.current_period_end < now) {
+      subscription.status = 'expired';
+      await subscription.save();
+      console.log(`⚠️ Subscription expired for user ${userId}`);
+    }
+  }
+
+  return subscription;
+}
+
+// ✅ Fetch users and their subscription status
+router.get('/users', requireAuth,async (req, res, next) => {
   try {
     const { User } = getDb();
-    const rows = await User.find({}).select('email name role created_at').sort({ _id: -1 }).lean();
-    res.json(rows.map(u => ({ id: u._id, ...u })));
-  } catch (e) { next(e); }
+
+    const users = await User.find({})
+      .select('email name role created_at')
+      .sort({ _id: -1 })
+      .lean();
+
+    // Optionally, check subscriptions for all users in parallel
+    const usersWithSubscription = await Promise.all(
+      users.map(async (u) => {
+        const subscription = await checkSubscriptionOnLogin(u._id);
+        return {
+          id: u._id,
+          ...u,
+          subscriptionStatus: subscription ? subscription.status : 'none',
+        };
+      })
+    );
+
+    res.json(usersWithSubscription);
+  } catch (e) {
+    next(e);
+  }
 });
 
-router.patch('/users/:id', async (req, res, next) => {
+
+router.patch('/users/:id',requireAuth, async (req, res, next) => {
   try {
     const { User } = getDb();
     const { name, role } = req.body;
@@ -23,7 +62,7 @@ router.patch('/users/:id', async (req, res, next) => {
   } catch (e) { next(e); }
 });
 
-router.delete('/users/:id', async (req, res, next) => {
+router.delete('/users/:id',requireAuth, async (req, res, next) => {
   try {
     const { User } = getDb();
     await User.findByIdAndDelete(req.params.id);
@@ -33,7 +72,7 @@ router.delete('/users/:id', async (req, res, next) => {
 
 // Categories
 // GET categories
-router.get('/categories', async (req, res, next) => {
+router.get('/categories',requireAuth, async (req, res, next) => {
   try {
     const { Category } = getDb();
     const rows = await Category.find({}).sort({ name: 1 }).lean();
@@ -42,21 +81,21 @@ router.get('/categories', async (req, res, next) => {
 });
 
 // POST category
-router.post('/categories', uploadImage.single('file'), async (req, res, next) => {
+router.post('/categories',requireAuth, async (req, res, next) => {
   try {
     const { Category } = getDb();
     const { name, slug } = req.body;
 
-    const image_url = req.file?.path || null; // ✅ handle uploaded image if provided
-
-    const c = await Category.create({ name, slug, image_url });
+    const c = await Category.create({ name, slug });
+    console.log('Created category:', c);
     res.json({ id: c._id, data: c });
   } catch (e) { next(e); }
 });
 
 
+
 // PATCH category
-router.patch('/categories/:id', uploadImage.single('file'), async (req, res, next) => {
+router.patch('/categories/:id',requireAuth, uploadImage.single('file'), async (req, res, next) => {
   try {
     const { Category } = getDb();
     const { name, slug } = req.body;
@@ -76,16 +115,77 @@ router.patch('/categories/:id', uploadImage.single('file'), async (req, res, nex
 });
 
 
-router.delete('/categories/:id', async (req, res, next) => {
+router.delete('/categories/:id',requireAuth, async (req, res, next) => {
   try {
     const { Category } = getDb();
     await Category.findByIdAndDelete(req.params.id);
     res.json({ ok: true });
   } catch (e) { next(e); }
 });
+
+//add image or update image for category
+router.post( "/categories/:id/image", requireAuth, uploadImage.single("file"), async (req, res, next) => {
+    try {
+      const { Category } = getDb();
+      const fileUrl = req.file?.path || null;
+      console.log("UPLOADED FILE:", req.file);
+
+      if (!fileUrl) {
+        return res.status(400).json({
+          success: false,
+          message: "No image uploaded",
+        });
+      }
+
+      // 1️⃣ Find existing category
+      const category = await Category.findById(req.params.id);
+      if (!category) {
+        return res.status(404).json({
+          success: false,
+          message: "Category not found",
+        });
+      }
+
+      // 2️⃣ If an old image exists, delete it from Cloudinary
+      if (category.image_url) {
+        try {
+          const oldUrl = category.image_url;
+          const publicIdMatch = oldUrl.match(/\/([^/]+)\.[a-zA-Z]+$/);
+
+          if (publicIdMatch && publicIdMatch[1]) {
+            const publicId = `courses/images/${publicIdMatch[1]}`;
+            console.log("Deleting old image:", publicId);
+            await cloudinary.uploader.destroy(publicId);
+          }
+        } catch (deleteErr) {
+          console.warn("⚠️ Failed to delete old image:", deleteErr.message);
+          // continue — not fatal
+        }
+      }
+
+      // 3️⃣ Update the category with the new image URL
+      category.image_url = fileUrl;
+      category.pos = 1; // optional if your schema supports it
+      await category.save();
+
+      res.json({
+        success: true,
+        message: category.image_url
+          ? "Image added/updated successfully"
+          : "Image added successfully",
+        data: category,
+      });
+    } catch (err) {
+      console.error("Error handling image:", err);
+      next(err);
+    }
+  }
+);
+
+
 //Packs
 
-router.get("/packs", async (req, res, next) => {
+router.get("/packs",requireAuth, async (req, res, next) => {
   try {
     const { Pack } = getDb();
     const rows = await Pack.find({}).sort({ _id: -1 }).lean();
@@ -93,7 +193,7 @@ router.get("/packs", async (req, res, next) => {
   } catch (e) { next(e); }
 });
 
-router.post("/packs", async (req, res, next) => {
+router.post("/packs",requireAuth, async (req, res, next) => {
   try {
     const { Pack } = getDb();
     const { category_id, name, description, is_published, plans } = req.body;
@@ -111,7 +211,7 @@ router.post("/packs", async (req, res, next) => {
 });
 
 
-router.patch("/packs/:id", async (req, res, next) => {
+router.patch("/packs/:id",requireAuth, async (req, res, next) => {
   try {
     const { Pack } = getDb();
     const { name, description, is_published, plans } = req.body;
@@ -128,7 +228,7 @@ router.patch("/packs/:id", async (req, res, next) => {
 });
 
 
-router.delete("/packs/:id", async (req, res, next) => {
+router.delete("/packs/:id",requireAuth, async (req, res, next) => {
   try {
     const { Pack } = getDb();
     await Pack.findByIdAndDelete(req.params.id);
@@ -136,65 +236,106 @@ router.delete("/packs/:id", async (req, res, next) => {
   } catch (e) { next(e); }
 });
 // Courses
-router.get('/courses', async (req, res, next) => {
+router.get('/courses', requireAuth, async (req, res, next) => {
   try {
     const { Course, Category } = getDb();
-    const rows = await Course.find({})
+
+    const courses = await Course.find({})
       .populate('category_id', 'name')
-      .sort({ _id: -1 })
+      .sort({ created_at: -1 }) // better than _id for chronological order
       .lean();
 
-    const formatted = rows.map(c => ({
+    const formatted = courses.map(c => ({
       id: c._id,
-      ...c,
-      category_name: c.category_id?.name || null
+      title: c.title,
+      description: c.description,
+      category_id: c.category_id?._id || null,
+      category_name: c.category_id?.name || null,
+      level: c.level,
+      pack_id: c.pack_id || null,
+      is_published: c.is_published,
+      coach_name: c.coach_name,
+      created_at: c.created_at
     }));
 
     res.json(formatted);
-  } catch (e) { next(e); }
+  } catch (err) {
+    next(err);
+  }
 });
 
-router.post('/courses', async (req, res, next) => {
+router.post('/courses', requireAuth, async (req, res, next) => {
   try {
     const { Course } = getDb();
-    const { title, description, price_cents, category_id, level, is_published, coach_name } = req.body;
-    const c = await Course.create({
+    const { title, description, category_id,pack_id, level, is_published, coach_name } = req.body;
+
+    if (!title || !category_id || !pack_id) {
+      return res.status(400).json({ error: 'Title , pack_idand category_id are required' });
+    }
+
+    const course = await Course.create({
       title,
-      description,
-      price_cents: price_cents ,
+      description: description || '',
       category_id,
-      level: level ,
+      pack_id,
+      level: level || 'Beginner',
       is_published: !!is_published,
-      coach_name : coach_name || 'Tahani Kochrad'
+      coach_name: coach_name || 'Tahani Kochrad'
     });
-    res.json({ id: c._id });
-  } catch (e) { next(e); }
+
+    res.status(201).json({ id: course._id, message: 'Course created successfully' });
+  } catch (err) {
+    // Handle duplicate key errors or other MongoDB errors
+    if (err.code === 11000) return res.status(400).json({ error: 'Duplicate course detected' });
+    next(err);
+  }
 });
 
-router.patch('/courses/:id', async (req, res, next) => {
+router.patch('/courses/:id', requireAuth, async (req, res, next) => {
   try {
     const { Course } = getDb();
+    const { id } = req.params;
+
+    const allowedFields = ['title', 'description', 'category_id', 'level', 'coach_name', 'is_published'];
     const updateData = {};
-    ['title', 'description', 'price_cents', 'category_id', 'level', 'coach_name'].forEach(f => {
-      if (req.body[f] !== undefined) updateData[f] = req.body[f];
-    });
-    if (req.body.is_published !== undefined) updateData.is_published = !!req.body.is_published;
 
-    await Course.findByIdAndUpdate(req.params.id, { $set: updateData });
-    res.json({ ok: true });
-  } catch (e) { next(e); }
+    allowedFields.forEach(field => {
+      if (req.body[field] !== undefined) {
+        updateData[field] = field === 'is_published' ? !!req.body[field] : req.body[field];
+      }
+    });
+
+    const updatedCourse = await Course.findByIdAndUpdate(id, updateData, { new: true });
+
+    if (!updatedCourse) {
+      return res.status(404).json({ error: 'Course not found' });
+    }
+
+    res.json({ ok: true, course: updatedCourse });
+  } catch (err) {
+    next(err);
+  }
 });
 
-router.delete('/courses/:id', async (req, res, next) => {
+
+router.delete('/courses/:id', requireAuth, async (req, res, next) => {
   try {
     const { Course } = getDb();
-    await Course.findByIdAndDelete(req.params.id);
-    res.json({ ok: true });
-  } catch (e) { next(e); }
+    const deletedCourse = await Course.findByIdAndDelete(req.params.id);
+
+    if (!deletedCourse) {
+      return res.status(404).json({ error: 'Course not found' });
+    }
+
+    res.json({ ok: true, message: 'Course deleted successfully' });
+  } catch (err) {
+    next(err);
+  }
 });
+
 
 // Lessons
-router.get('/courses/:id/lessons', async (req, res, next) => {
+router.get('/courses/:id/lessons',requireAuth, async (req, res, next) => {
   try {
     const { Lesson } = getDb();
     const rows = await Lesson.find({ course_id: req.params.id }).sort({ position: 1 }).lean();
@@ -203,7 +344,7 @@ router.get('/courses/:id/lessons', async (req, res, next) => {
 });
 
 // Create lesson without video 
-router.post('/courses/:id/lessons', async (req, res, next) => {
+router.post('/courses/:id/lessons',requireAuth, async (req, res, next) => {
   try {
     const { Lesson } = getDb();
     const { title, content, position } = req.body;
@@ -224,7 +365,7 @@ router.post('/courses/:id/lessons', async (req, res, next) => {
   }
 });
 //Upload Videp
-router.patch('/courses/lessons/:lessonId/video',uploadVideo.single('file'),
+router.patch('/courses/lessons/:lessonId/video',uploadVideo.single('file'),requireAuth,
   async (req, res, next) => {
     try {
       const { Lesson } = getDb();
@@ -252,7 +393,7 @@ router.patch('/courses/lessons/:lessonId/video',uploadVideo.single('file'),
   }
 );
 
-router.patch('/courses/lessons/:lessonId',  async (req, res, next) => {
+router.patch('/courses/lessons/:lessonId',requireAuth,  async (req, res, next) => {
     try {
       const { Lesson } = getDb();
 
@@ -282,7 +423,7 @@ router.patch('/courses/lessons/:lessonId',  async (req, res, next) => {
 );
 
 
-router.delete('/courses/lessons/:lessonId', async (req, res, next) => {
+router.delete('/courses/lessons/:lessonId',requireAuth, async (req, res, next) => {
   try {
     const { Lesson } = getDb();
     await Lesson.findByIdAndDelete(req.params.lessonId);
@@ -291,7 +432,7 @@ router.delete('/courses/lessons/:lessonId', async (req, res, next) => {
 });
 
 // Course images
-router.get('/courses/:id/images', async (req, res, next) => {
+router.get('/courses/:id/images',requireAuth, async (req, res, next) => {
   try {
     const { CourseImage } = getDb();
     const images = await CourseImage.find({ course_id: req.params.id }).sort({ pos: 1 }).lean();
@@ -303,7 +444,7 @@ router.get('/courses/:id/images', async (req, res, next) => {
 
 
 // Upload image for a course
-router.post('/courses/:id/images', uploadImage.single("file"), async (req, res, next) => {
+router.post('/courses/:id/images',requireAuth, uploadImage.single("file"), async (req, res, next) => {
   try {
     const { CourseImage } = getDb();
 
@@ -323,8 +464,36 @@ router.post('/courses/:id/images', uploadImage.single("file"), async (req, res, 
   }
 });
 
+router.patch('/courses/:courseId/images/:imageId', requireAuth, uploadImage.single("file"), async (req, res, next) => {
+  try {
+    const { CourseImage } = getDb(); // get your model from DB setup
+    const { courseId, imageId } = req.params;
 
-router.delete('/images/:imageId', async (req, res, next) => {
+    // Get the new image file path (Cloudinary or local depending on your setup)
+    const fileUrl = req.file?.path || null;
+    if (!fileUrl) {
+      return res.status(400).json({ success: false, message: "No image file provided." });
+    }
+
+    // Find and update the existing image document
+    const updatedImage = await CourseImage.findOneAndUpdate(
+      { _id: imageId, course_id: courseId },
+      { image_url: fileUrl },
+      { new: true } // return the updated document
+    );
+
+    if (!updatedImage) {
+      return res.status(404).json({ success: false, message: "Course image not found." });
+    }
+
+    res.json({ success: true, data: updatedImage });
+  } catch (err) {
+    next(err);
+  }
+});
+
+
+router.delete('/images/:imageId',requireAuth, async (req, res, next) => {
   try {
     const { CourseImage } = getDb();
     await CourseImage.findByIdAndDelete(req.params.imageId);
@@ -333,7 +502,7 @@ router.delete('/images/:imageId', async (req, res, next) => {
 });
 
 // Promotions
-router.get('/promos', async (req, res, next) => {
+router.get('/promos',requireAuth, async (req, res, next) => {
   try {
     const { Promotion } = getDb();
     const rows = await Promotion.find({}).sort({ _id: -1 }).lean();
@@ -341,7 +510,7 @@ router.get('/promos', async (req, res, next) => {
   } catch (e) { next(e); }
 });
 
-router.post('/promos', async (req, res, next) => {
+router.post('/promos',requireAuth, async (req, res, next) => {
   try {
     const { Promotion } = getDb();
     const {  type, value, valid_from, valid_to } = req.body;
@@ -355,7 +524,7 @@ router.post('/promos', async (req, res, next) => {
   } catch (e) { next(e); }
 });
 
-router.patch('/promos/:id', async (req, res, next) => {
+router.patch('/promos/:id',requireAuth, async (req, res, next) => {
   try {
     const { Promotion } = getDb();
     const updateData = {};
@@ -368,7 +537,7 @@ router.patch('/promos/:id', async (req, res, next) => {
   } catch (e) { next(e); }
 });
 
-router.delete('/promos/:id', async (req, res, next) => {
+router.delete('/promos/:id',requireAuth, async (req, res, next) => {
   try {
     const { Promotion } = getDb();
     await Promotion.findByIdAndDelete(req.params.id);
@@ -376,7 +545,7 @@ router.delete('/promos/:id', async (req, res, next) => {
   } catch (e) { next(e); }
 });
 // Healthy Packages
-router.get("/healthy-packages", async (req, res, next) => {
+router.get("/healthy-packages",requireAuth, async (req, res, next) => {
   try {
     const { HealthyPackage } = getDb();
     const rows = await HealthyPackage.find({}).sort({ _id: -1 }).lean();
@@ -386,14 +555,11 @@ router.get("/healthy-packages", async (req, res, next) => {
   }
 });
 
-/* ==============================
-   CREATE Healthy Package (with multiple image upload)
-============================== */
-router.post(  "/healthy-packages",uploadImage.array("images"), // ✅ no file limit
+router.post(  "/healthy-packages",uploadImage.array("images"),requireAuth, // ✅ no file limit
   async (req, res, next) => {
     try {
       const { HealthyPackage } = getDb();
-      const { name, description, duration_days, price_cents, features, is_published } = req.body;
+      const { name, description, duration_days,  features, is_published } = req.body;
 
       // Handle uploaded images
       const uploadedImages = (req.files || []).map((file, index) => ({
@@ -410,7 +576,7 @@ router.post(  "/healthy-packages",uploadImage.array("images"), // ✅ no file li
         name,
         description,
         duration_days,
-        price_cents,
+        
         features: Array.isArray(parsedFeatures) ? parsedFeatures : [],
         images: uploadedImages,
         is_published: !!is_published,
@@ -423,20 +589,16 @@ router.post(  "/healthy-packages",uploadImage.array("images"), // ✅ no file li
   }
 );
 
-/* ==============================
-   UPDATE Healthy Package (with multiple image upload)
-============================== */
-router.patch("/healthy-packages/:id",  uploadImage.array("images"), // ✅ unlimited
+router.patch("/healthy-packages/:id",  uploadImage.array("images"),requireAuth, // ✅ unlimited
   async (req, res, next) => {
     try {
       const { HealthyPackage } = getDb();
-      const { name, description, duration_days, price_cents, features, is_published } = req.body;
+      const { name, description, duration_days, features, is_published } = req.body;
 
       const updateData = {};
       if (name !== undefined) updateData.name = name;
       if (description !== undefined) updateData.description = description;
       if (duration_days !== undefined) updateData.duration_days = duration_days;
-      if (price_cents !== undefined) updateData.price_cents = price_cents;
       if (is_published !== undefined) updateData.is_published = !!is_published;
 
       // Handle features
@@ -473,10 +635,7 @@ router.patch("/healthy-packages/:id",  uploadImage.array("images"), // ✅ unlim
   }
 );
 
-/* ==============================
-   DELETE Healthy Package
-============================== */
-router.delete("/healthy-packages/:id", async (req, res, next) => {
+router.delete("/healthy-packages/:id",requireAuth, async (req, res, next) => {
   try {
     const { HealthyPackage } = getDb();
     await HealthyPackage.findByIdAndDelete(req.params.id);
@@ -485,6 +644,108 @@ router.delete("/healthy-packages/:id", async (req, res, next) => {
     next(e);
   }
 });
+
+router.get('/healthy-subscriptions', requireAuth,async (req, res, next) => {
+  try {
+    const { healthyPrice } = getDb();
+    const hs = await healthyPrice.findOne().sort({ _id: -1 }).lean();
+    if (!hs) return res.json({});
+
+    const flatPlans = {};
+    hs.plans.forEach(p => {
+      flatPlans[p.plan] = p.price_cents;
+    });
+
+    res.json(flatPlans);
+  } catch (e) {
+    next(e);
+  }
+});
+
+router.post('/healthy-subscriptions',requireAuth, async (req, res, next) => {
+  try {
+    const { healthyPrice } = getDb();
+    const { plan, price_cents } = req.body;
+
+    if (!plan || price_cents === undefined) {
+      return res.status(400).json({ error: 'plan and price_cents are required' });
+    }
+
+    if (!['monthly', 'quarterly'].includes(plan)) {
+      return res.status(400).json({ error: 'Invalid plan type' });
+    }
+
+    let hs = await healthyPrice.findOne().sort({ _id: -1 });
+
+    const current_period_end = plan === 'monthly'
+      ? new Date(new Date().setMonth(new Date().getMonth() + 1))
+      : new Date(new Date().setMonth(new Date().getMonth() + 3));
+
+    if (!hs) {
+      hs = await healthyPrice.create({
+        plans: [{ plan, price_cents }],
+        current_period_end,
+        status: 'active'
+      });
+    } else {
+      const existingPlan = hs.plans.find(p => p.plan === plan);
+      if (existingPlan) return res.status(409).json({ error: 'Subscription plan already exists' });
+
+      hs.plans.push({ plan, price_cents });
+      hs.updated_at = new Date();
+      await hs.save();
+    }
+
+    const flatPlans = {};
+    hs.plans.forEach(p => {
+      flatPlans[p.plan] = p.price_cents;
+    });
+
+    res.status(201).json(flatPlans);
+  } catch (e) {
+    next(e);
+  }
+});
+
+router.patch('/healthy-subscriptions/:id',requireAuth, async (req, res, next) => {
+  try {
+    const { healthyPrice } = getDb();
+    const { id } = req.params;
+    const { plan, price_cents, status, current_period_end } = req.body;
+
+    const hs = await healthyPrice.findById(id);
+    if (!hs) return res.status(404).json({ error: 'Subscription not found' });
+
+    if (plan && price_cents !== undefined) {
+      const planIndex = hs.plans.findIndex(p => p.plan === plan);
+      if (planIndex === -1) return res.status(404).json({ error: 'Plan not found in subscription' });
+
+      hs.plans[planIndex].price_cents = price_cents;
+    }
+
+    if (status) {
+      if (!['active', 'expired', 'canceled'].includes(status)) {
+        return res.status(400).json({ error: 'Invalid status' });
+      }
+      hs.status = status;
+    }
+
+    if (current_period_end) hs.current_period_end = new Date(current_period_end);
+    hs.updated_at = new Date();
+
+    await hs.save();
+
+    const flatPlans = {};
+    hs.plans.forEach(p => {
+      flatPlans[p.plan] = p.price_cents;
+    });
+
+    res.json(flatPlans);
+  } catch (e) {
+    next(e);
+  }
+});
+
 
 
 export default router;

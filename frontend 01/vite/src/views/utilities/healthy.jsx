@@ -1,3 +1,4 @@
+"use client"
 
 import { useState, useEffect } from "react"
 import Box from "@mui/material/Box"
@@ -28,6 +29,7 @@ import CancelIcon from "@mui/icons-material/Cancel"
 import ImageIcon from "@mui/icons-material/Image"
 import CloseIcon from "@mui/icons-material/Close"
 import CloudUploadIcon from "@mui/icons-material/CloudUpload"
+import HealthyPrices from "./healthy-prices"
 
 export default function HealthyPackagesManagement() {
   const [packages, setPackages] = useState([])
@@ -39,7 +41,6 @@ export default function HealthyPackagesManagement() {
     name: "",
     description: "",
     duration_days: "",
-    price_cents: "",
     features: [],
     is_published: false,
   })
@@ -47,16 +48,24 @@ export default function HealthyPackagesManagement() {
   const [viewingImages, setViewingImages] = useState(null)
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
 
-  const API_BASE = "http://localhost:4000/api/admin"
+  const API_BASE = import.meta.env.VITE_API_BASE_ADMIN;
 
   useEffect(() => {
     fetchPackages()
   }, [])
-
+ const getAuthHeaders = () => {
+    const token = localStorage.getItem("token")
+    return token ? { Authorization: `Bearer ${token}` } : {}
+  }
   const fetchPackages = async () => {
     try {
       setLoading(true)
-      const response = await fetch(`${API_BASE}/healthy-packages`)
+      const response = await fetch(`${API_BASE}/healthy-packages`,{
+         headers: {
+          "Content-Type": "application/json",
+          ...getAuthHeaders(),
+        },
+      })
       if (!response.ok) {
         const errorData = await response.json().catch(() => null)
         throw new Error(errorData?.details || errorData?.message || "Failed to fetch healthy packages")
@@ -78,7 +87,6 @@ export default function HealthyPackagesManagement() {
         name: pkg.name,
         description: pkg.description,
         duration_days: pkg.duration_days,
-        price_cents: pkg.price_cents,
         features: Array.isArray(pkg.features) ? pkg.features : [],
         is_published: pkg.is_published,
       })
@@ -89,7 +97,6 @@ export default function HealthyPackagesManagement() {
         name: "",
         description: "",
         duration_days: "",
-        price_cents: "",
         features: [],
         is_published: false,
       })
@@ -160,7 +167,6 @@ export default function HealthyPackagesManagement() {
       formDataToSend.append("name", formData.name)
       formDataToSend.append("description", formData.description)
       formDataToSend.append("duration_days", formData.duration_days)
-      formDataToSend.append("price_cents", formData.price_cents)
       formDataToSend.append("is_published", formData.is_published)
       formDataToSend.append("features", JSON.stringify(formData.features.filter((f) => f.title.trim().length > 0)))
 
@@ -216,6 +222,10 @@ export default function HealthyPackagesManagement() {
 
   return (
     <Box>
+      <Box sx={{ mb: 6 }}>
+        <HealthyPrices />
+      </Box>
+
       {error && (
         <Alert severity="error" sx={{ mb: 3 }} onClose={() => setError(null)}>
           {error}
@@ -242,7 +252,6 @@ export default function HealthyPackagesManagement() {
               <TableCell sx={{ fontWeight: 600 }}>Name</TableCell>
               <TableCell sx={{ fontWeight: 600 }}>Description</TableCell>
               <TableCell sx={{ fontWeight: 600 }}>Duration (Days)</TableCell>
-              <TableCell sx={{ fontWeight: 600 }}>Price</TableCell>
               <TableCell sx={{ fontWeight: 600 }}>Features</TableCell>
               <TableCell sx={{ fontWeight: 600 }}>Published</TableCell>
               <TableCell align="right" sx={{ fontWeight: 600 }}>
@@ -300,14 +309,13 @@ export default function HealthyPackagesManagement() {
                       </Box>
                     )}
                   </TableCell>
-                  <TableCell sx={{ width: 300 }}>{pkg.name}</TableCell>
+                  <TableCell sx={{ fontWeight: 500 }}>{pkg.name}</TableCell>
                   <TableCell sx={{ width: 800 }}>
                     <p className="truncate">{pkg.description}</p>
                   </TableCell>
                   <TableCell>{pkg.duration_days}</TableCell>
-                  <TableCell>{formatPrice(pkg.price_cents)}</TableCell>
                   <TableCell>
-                    <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5, width: 200 }}>
+                    <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5,width: 300 }}>
                       {Array.isArray(pkg.features) && pkg.features.length > 0 ? (
                         pkg.features
                           .slice(0, 2)
@@ -368,7 +376,6 @@ export default function HealthyPackagesManagement() {
               multiline
               rows={3}
               required
-              
             />
             <TextField
               label="Duration (Days)"
@@ -377,15 +384,6 @@ export default function HealthyPackagesManagement() {
               onChange={(e) => setFormData({ ...formData, duration_days: e.target.value })}
               fullWidth
               required
-            />
-            <TextField
-              label="Price (in cents)"
-              type="number"
-              value={formData.price_cents}
-              onChange={(e) => setFormData({ ...formData, price_cents: e.target.value })}
-              fullWidth
-              required
-              helperText="Enter amount in cents (e.g., 9999 for $99.99)"
             />
 
             <Box>
@@ -489,7 +487,7 @@ export default function HealthyPackagesManagement() {
           <Button
             onClick={handleSubmit}
             variant="contained"
-            disabled={!formData.name || !formData.description || !formData.duration_days || !formData.price_cents}
+            disabled={!formData.name || !formData.description || !formData.duration_days }
           >
             {editingPackage ? "Update" : "Create"}
           </Button>
@@ -509,6 +507,7 @@ export default function HealthyPackagesManagement() {
               src={
                 viewingImages?.images[currentImageIndex]?.url ||
                 viewingImages?.images[currentImageIndex] ||
+                "/placeholder.svg" ||
                 "/placeholder.svg"
               }
               alt={

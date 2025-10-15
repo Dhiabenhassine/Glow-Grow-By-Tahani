@@ -17,15 +17,41 @@ resetPasswordExpires: Date,
   created_at: { type: Date, default: Date.now }
 });
 
-/* =======================
-   Category Schema
-======================= */
+
 const categorySchema = new mongoose.Schema({
   name: String,
   slug: String,
   image_url: { type: String },
 });
 
+const packSchema = new mongoose.Schema({
+  category_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Category', required: true },
+  name: { type: String, required: true },
+  description: String,
+  is_published: { type: Boolean, default: true },
+
+  plans: [
+    {
+      label: { type: String, required: true }, // e.g. "1 Month", "3 Months"
+      duration_days: { type: Number, required: true }, // 30, 90, etc.
+      price_cents: { type: Number, required: true },
+    }
+  ],
+  courses: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Course' }],
+
+  created_at: { type: Date, default: Date.now }
+});
+
+
+const packPurchaseSchema = new mongoose.Schema({
+  user_id: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+  pack_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Pack', required: true },
+  amount_cents: { type: Number, required: true },
+  currency: { type: String, default: 'USD' },
+  status: { type: String, enum: ['pending', 'completed', 'failed'], default: 'pending' },
+  paypal_order_id: { type: String },
+  created_at: { type: Date, default: Date.now }
+});
 /* =======================
    Course / Lessons
 ======================= */
@@ -54,38 +80,7 @@ const courseSchema = new mongoose.Schema({
   created_at: { type: Date, default: Date.now }
 });
 
-/* =======================
-   Packs & Purchases
-======================= */
-const packSchema = new mongoose.Schema({
-  category_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Category', required: true },
-  name: { type: String, required: true },
-  description: String,
-  is_published: { type: Boolean, default: true },
 
-  // Each pack can have multiple plans: 1 month, 3 months, 6 months...
-  plans: [
-    {
-      label: { type: String, required: true }, // e.g. "1 Month", "3 Months"
-      duration_days: { type: Number, required: true }, // 30, 90, etc.
-      price_cents: { type: Number, required: true },
-    }
-  ],
-  courses: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Course' }],
-
-  created_at: { type: Date, default: Date.now }
-});
-
-
-const packPurchaseSchema = new mongoose.Schema({
-  user_id: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-  pack_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Pack', required: true },
-  amount_cents: { type: Number, required: true },
-  currency: { type: String, default: 'USD' },
-  status: { type: String, enum: ['pending', 'completed', 'failed'], default: 'pending' },
-  paypal_order_id: { type: String },
-  created_at: { type: Date, default: Date.now }
-});
 
 // Ensure user can only purchase a given pack once
 //packPurchaseSchema.index({ user_id: 1, pack_id: 1 }, { unique: true });
@@ -128,7 +123,6 @@ const healthyPackageSchema = new mongoose.Schema({
   name: { type: String, required: true },             // e.g., "Weight Loss Plan"
   description: { type: String },                      // Description of the package
   duration_days: { type: Number, required: true },    // Duration (e.g., 30, 60)
-  price_cents: { type: Number, required: true },      // Price in cents
   features: [                                         // List of package features
     {
       title: { type: String, required: true },        // e.g., "Nutrition Guide"
@@ -145,6 +139,17 @@ const healthyPackageSchema = new mongoose.Schema({
   is_published: { type: Boolean, default: true },     // Visibility toggle
   created_at: { type: Date, default: Date.now }
 });
+const healthyPriceSchema = new mongoose.Schema({
+  plans: [
+    {
+      plan: { type: String, enum: ['monthly', 'quarterly'], required: true },
+      price_cents: { type: Number, required: true }
+    }
+  ],
+  created_at: { type: Date, default: Date.now },
+  updated_at: { type: Date, default: Date.now }
+});
+
 
 
 /* =======================
@@ -168,7 +173,7 @@ export async function initDb() {
   models.Promotion = mongoose.models.Promotion || mongoose.model('Promotion', promotionSchema);
   models.PackPurchase = mongoose.models.PackPurchase || mongoose.model('PackPurchase', packPurchaseSchema);
   models.HealthyPackage = mongoose.models.HealthyPackage || mongoose.model('HealthyPackage', healthyPackageSchema);
-
+  models.healthyPrice = mongoose.models.healthyPrice || mongoose.model('healthyPrice', healthyPriceSchema);
   connected = true;
   return models;
 }

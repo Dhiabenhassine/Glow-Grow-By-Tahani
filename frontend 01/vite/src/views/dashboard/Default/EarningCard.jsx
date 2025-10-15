@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 
 // material-ui
 import { useTheme } from '@mui/material/styles';
@@ -28,6 +29,7 @@ export default function EarningCard({ isLoading }) {
   const theme = useTheme();
 
   const [anchorEl, setAnchorEl] = React.useState(null);
+  const [totalUsers, setTotalUsers] = useState(0);
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -36,6 +38,20 @@ export default function EarningCard({ isLoading }) {
   const handleClose = () => {
     setAnchorEl(null);
   };
+const API_BASE = import.meta.env.VITE_API_BASE_DASHBOARD;
+// 👇 Fetch total users from backend
+  useEffect(() => {
+    const fetchTotalUsers = async () => {
+      try {
+        const response = await axios.get(`${API_BASE}/total-users`); // adjust path to your backend route
+        setTotalUsers(response.data.totalUsers || 0);
+      } catch (error) {
+        console.error('Error fetching total users:', error);
+      }
+    };
+
+    fetchTotalUsers();
+  }, [API_BASE]);
 
   return (
     <>
@@ -138,10 +154,22 @@ export default function EarningCard({ isLoading }) {
                   </Grid>
                 </Grid>
               </Grid>
+
+              {/* 🧩 Display total users */}
               <Grid>
                 <Grid container sx={{ alignItems: 'center' }}>
                   <Grid>
-                    <Typography sx={{ fontSize: '2.125rem', fontWeight: 500, mr: 1, mt: 1.75, mb: 0.75 }}>$500.00</Typography>
+                    <Typography
+                      sx={{
+                        fontSize: '2.125rem',
+                        fontWeight: 500,
+                        mr: 1,
+                        mt: 1.75,
+                        mb: 0.75
+                      }}
+                    >
+                      {totalUsers}
+                    </Typography>
                   </Grid>
                   <Grid>
                     <Avatar
@@ -157,6 +185,7 @@ export default function EarningCard({ isLoading }) {
                   </Grid>
                 </Grid>
               </Grid>
+
               <Grid sx={{ mb: 1.25 }}>
                 <Typography
                   sx={{
@@ -165,7 +194,7 @@ export default function EarningCard({ isLoading }) {
                     color: 'secondary.200'
                   }}
                 >
-                  Total Earning
+                  Total Users
                 </Typography>
               </Grid>
             </Grid>

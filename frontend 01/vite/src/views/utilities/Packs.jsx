@@ -1,28 +1,10 @@
-
 import { useState, useEffect } from "react"
-import Box from "@mui/material/Box"
-import Button from "@mui/material/Button"
-import Paper from "@mui/material/Paper"
-import Table from "@mui/material/Table"
-import TableBody from "@mui/material/TableBody"
-import TableCell from "@mui/material/TableCell"
-import TableContainer from "@mui/material/TableContainer"
-import TableHead from "@mui/material/TableHead"
-import TableRow from "@mui/material/TableRow"
-import IconButton from "@mui/material/IconButton"
-import Dialog from "@mui/material/Dialog"
-import DialogActions from "@mui/material/DialogActions"
-import DialogContent from "@mui/material/DialogContent"
-import DialogTitle from "@mui/material/DialogTitle"
-import TextField from "@mui/material/TextField"
-import CircularProgress from "@mui/material/CircularProgress"
-import Alert from "@mui/material/Alert"
-import Checkbox from "@mui/material/Checkbox"
-import FormControlLabel from "@mui/material/FormControlLabel"
-import Select from "@mui/material/Select"
-import MenuItem from "@mui/material/MenuItem"
-import FormControl from "@mui/material/FormControl"
-import InputLabel from "@mui/material/InputLabel"
+import {
+  Box, Button, Paper, Table, TableBody, TableCell, TableContainer, TableHead,
+  TableRow, IconButton, Dialog, DialogActions, DialogContent, DialogTitle,
+  TextField, CircularProgress, Alert, Checkbox, FormControlLabel,
+  Select, MenuItem, FormControl, InputLabel
+} from "@mui/material"
 import EditIcon from "@mui/icons-material/Edit"
 import DeleteIcon from "@mui/icons-material/Delete"
 import AddIcon from "@mui/icons-material/Add"
@@ -42,17 +24,29 @@ export default function PacksManagement() {
     plans: [],
   })
 
-  const API_BASE = "http://localhost:4000/api/admin"
+  const API_BASE = import.meta.env.VITE_API_BASE_ADMIN
+
+  // Helper: attach Authorization headers
+  const getAuthHeaders = () => {
+    const token = localStorage.getItem("token")
+    return token ? { Authorization: `Bearer ${token}` } : {}
+  }
 
   useEffect(() => {
     fetchPacks()
     fetchCategories()
   }, [])
 
+  // 🟢 Fetch all packs
   const fetchPacks = async () => {
     try {
       setLoading(true)
-      const response = await fetch(`${API_BASE}/packs`)
+      const response = await fetch(`${API_BASE}/packs`, {
+        headers: {
+          "Content-Type": "application/json",
+          ...getAuthHeaders(),
+        },
+      })
       if (!response.ok) throw new Error("Failed to fetch packs")
       const data = await response.json()
       setPacks(data)
@@ -64,9 +58,15 @@ export default function PacksManagement() {
     }
   }
 
+  // 🟢 Fetch categories
   const fetchCategories = async () => {
     try {
-      const response = await fetch(`${API_BASE}/categories`)
+      const response = await fetch(`${API_BASE}/categories`, {
+        headers: {
+          "Content-Type": "application/json",
+          ...getAuthHeaders(),
+        },
+      })
       if (!response.ok) throw new Error("Failed to fetch categories")
       const data = await response.json()
       setCategories(data)
@@ -75,7 +75,8 @@ export default function PacksManagement() {
     }
   }
 
-  const handleOpenDialog = (pack) => {
+  // 🟢 Open dialog for add/edit
+  const handleOpenDialog = (pack = null) => {
     if (pack) {
       setEditingPack(pack)
       setFormData({
@@ -83,7 +84,7 @@ export default function PacksManagement() {
         name: pack.name,
         description: pack.description,
         is_published: pack.is_published,
-        plans: pack.plans,
+        plans: pack.plans || [],
       })
     } else {
       setEditingPack(null)
@@ -98,24 +99,32 @@ export default function PacksManagement() {
     setOpenDialog(true)
   }
 
+  // 🟢 Close dialog
   const handleCloseDialog = () => {
     setOpenDialog(false)
     setEditingPack(null)
   }
 
+  // 🟢 Create or update pack
   const handleSubmit = async () => {
     try {
-      const url = editingPack ? `${API_BASE}/packs/${editingPack.id}` : `${API_BASE}/packs`
+      const url = editingPack
+        ? `${API_BASE}/packs/${editingPack.id}`
+        : `${API_BASE}/packs`
       const method = editingPack ? "PATCH" : "POST"
 
       const response = await fetch(url, {
         method,
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          ...getAuthHeaders(),
+        },
         body: JSON.stringify(formData),
       })
 
       if (!response.ok) throw new Error("Failed to save pack")
 
+      await response.json()
       handleCloseDialog()
       fetchPacks()
     } catch (err) {
@@ -123,12 +132,16 @@ export default function PacksManagement() {
     }
   }
 
+  // 🟢 Delete pack
   const handleDelete = async (id) => {
     if (!confirm("Are you sure you want to delete this pack?")) return
-
     try {
       const response = await fetch(`${API_BASE}/packs/${id}`, {
         method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          ...getAuthHeaders(),
+        },
       })
       if (!response.ok) throw new Error("Failed to delete pack")
       fetchPacks()
@@ -137,11 +150,13 @@ export default function PacksManagement() {
     }
   }
 
+  // 🟢 Utility to get category name
   const getCategoryName = (categoryId) => {
     const category = categories.find((c) => c.id === categoryId)
     return category ? category.name : "Unknown"
   }
 
+  // 🟡 Loading indicator
   if (loading) {
     return (
       <Box sx={{ display: "flex", justifyContent: "center", py: 8 }}>
@@ -187,7 +202,9 @@ export default function PacksManagement() {
             {packs.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={5} align="center" sx={{ py: 4 }}>
-                  <p className="text-muted-foreground">No packs found. Create your first pack!</p>
+                  <p className="text-muted-foreground">
+                    No packs found. Create your first pack!
+                  </p>
                 </TableCell>
               </TableRow>
             ) : (
@@ -195,10 +212,8 @@ export default function PacksManagement() {
                 <TableRow key={pack.id} hover>
                   <TableCell>{pack.name}</TableCell>
                   <TableCell>{getCategoryName(pack.category_id)}</TableCell>
-                  <TableCell sx={{ maxWidth: 300 }}>
-                    <div style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                      {pack.description}
-                    </div>
+                  <TableCell sx={{ maxWidth: 300, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                    {pack.description}
                   </TableCell>
                   <TableCell>
                     {pack.is_published ? (
@@ -222,6 +237,7 @@ export default function PacksManagement() {
         </Table>
       </TableContainer>
 
+      {/* 🟢 Add/Edit Dialog */}
       <Dialog open={openDialog} onClose={handleCloseDialog} maxWidth="sm" fullWidth>
         <DialogTitle>{editingPack ? "Edit Pack" : "Add Pack"}</DialogTitle>
         <DialogContent>

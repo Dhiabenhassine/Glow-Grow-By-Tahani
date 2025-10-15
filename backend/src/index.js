@@ -11,6 +11,7 @@ import subscriptionRoutes from './routes/subscriptions.js';
 import adminRoutes from './routes/admin.js';
 import { errorHandler } from './middleware/error.js';
 import bodyParser from 'body-parser';
+import dashboardRoutes from './routes/dashboard.js';
 
 const app = express();
 app.use(helmet());
@@ -30,6 +31,7 @@ app.use('/api/courses', courseRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/subscriptions', subscriptionRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/dashboard', dashboardRoutes);
 
 app.use(errorHandler);
 

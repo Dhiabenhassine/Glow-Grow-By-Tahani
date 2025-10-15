@@ -1,3 +1,4 @@
+"use client"
 
 import { useState, useEffect } from "react"
 import Box from "@mui/material/Box"
@@ -17,10 +18,6 @@ import DialogTitle from "@mui/material/DialogTitle"
 import TextField from "@mui/material/TextField"
 import CircularProgress from "@mui/material/CircularProgress"
 import Alert from "@mui/material/Alert"
-import Select from "@mui/material/Select"
-import MenuItem from "@mui/material/MenuItem"
-import FormControl from "@mui/material/FormControl"
-import InputLabel from "@mui/material/InputLabel"
 import EditIcon from "@mui/icons-material/Edit"
 import DeleteIcon from "@mui/icons-material/Delete"
 import AddIcon from "@mui/icons-material/Add"
@@ -38,16 +35,26 @@ export default function PromosManagement() {
     valid_to: "",
   })
 
-  const API_BASE = "http://localhost:4000/api/admin"
+  const API_BASE = import.meta.env.VITE_API_BASE_ADMIN
 
   useEffect(() => {
     fetchPromos()
   }, [])
 
+  const getAuthHeaders = () => {
+    const token = localStorage.getItem("token")
+    return token ? { Authorization: `Bearer ${token}` } : {}
+  }
+
   const fetchPromos = async () => {
     try {
       setLoading(true)
-      const response = await fetch(`${API_BASE}/promos`)
+      const response = await fetch(`${API_BASE}/promos`, {
+        headers: {
+          "Content-Type": "application/json",
+          ...getAuthHeaders(),
+        },
+      })
       if (!response.ok) throw new Error("Failed to fetch promotions")
       const data = await response.json()
       setPromos(data)
@@ -92,7 +99,10 @@ export default function PromosManagement() {
 
       const response = await fetch(url, {
         method,
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          ...getAuthHeaders(),
+        },
         body: JSON.stringify({
           ...formData,
           value: Number(formData.value),
@@ -114,6 +124,10 @@ export default function PromosManagement() {
     try {
       const response = await fetch(`${API_BASE}/promos/${id}`, {
         method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          ...getAuthHeaders(),
+        },
       })
       if (!response.ok) throw new Error("Failed to delete promotion")
       fetchPromos()
@@ -127,12 +141,7 @@ export default function PromosManagement() {
     return new Date(dateString).toLocaleDateString()
   }
 
-  const formatValue = (type, value) => {
-    if (type === "percentage") {
-      return `${value}%`
-    }
-    return `$${(value / 100).toFixed(2)}`
-  }
+  const formatValue = (value) => `${value}%`
 
   if (loading) {
     return (
@@ -188,7 +197,7 @@ export default function PromosManagement() {
                   <TableCell>
                     <span style={{ textTransform: "capitalize" }}>{promo.type}</span>
                   </TableCell>
-                  <TableCell>{formatValue(promo.type, promo.value)}</TableCell>
+                  <TableCell>{formatValue(promo.value)}</TableCell>
                   <TableCell>{formatDate(promo.valid_from)}</TableCell>
                   <TableCell>{formatDate(promo.valid_to)}</TableCell>
                   <TableCell align="right">
@@ -210,29 +219,24 @@ export default function PromosManagement() {
         <DialogTitle>{editingPromo ? "Edit Promotion" : "Add Promotion"}</DialogTitle>
         <DialogContent>
           <Box sx={{ display: "flex", flexDirection: "column", gap: 2, pt: 2 }}>
-            <FormControl fullWidth required>
-              <InputLabel>Type</InputLabel>
-              <Select
-                value={formData.type}
-                label="Type"
-                onChange={(e) => setFormData({ ...formData, type: e.target.value })}
-              >
-                <MenuItem value="percentage">Percentage</MenuItem>
-                <MenuItem value="fixed">Fixed Amount</MenuItem>
-              </Select>
-            </FormControl>
             <TextField
-              label={formData.type === "percentage" ? "Value (%)" : "Value (in cents)"}
+              label="Type"
+              value={formData.type}
+              onChange={(e) => setFormData({ ...formData, type: e.target.value })}
+              fullWidth
+              required
+            />
+            <TextField
+              label="Percentage Value"
               type="number"
               value={formData.value}
               onChange={(e) => setFormData({ ...formData, value: e.target.value })}
               fullWidth
               required
-              helperText={
-                formData.type === "percentage"
-                  ? "Enter percentage (e.g., 20 for 20%)"
-                  : "Enter amount in cents (e.g., 1000 for $10.00)"
-              }
+              InputProps={{
+                endAdornment: <span style={{ marginLeft: 4 }}>%</span>,
+              }}
+              helperText="Enter the discount percentage (e.g., 20 for 20%)"
             />
             <TextField
               label="Valid From"
