@@ -37,18 +37,15 @@ export default function HealthyPrices() {
 
   const API_BASE = import.meta.env.VITE_API_BASE_ADMIN
 
-  // Automatically fetch plans when the component loads
   useEffect(() => {
     fetchPrices()
   }, [])
 
-  // Retrieve token from localStorage if available
   const getAuthHeaders = () => {
     const token = localStorage.getItem("token")
     return token ? { Authorization: `Bearer ${token}` } : {}
   }
 
-  // Fetch all available subscription prices
   const fetchPrices = async () => {
     try {
       setLoading(true)
@@ -74,17 +71,14 @@ export default function HealthyPrices() {
     }
   }
 
-  // Open the dialog either for creating or editing a plan
   const handleOpenDialog = (plan) => {
     if (plan) {
-      // Editing existing plan
       setEditingPlan(plan)
       setFormData({
         plan,
         price_cents: prices[plan] || "",
       })
     } else {
-      // Creating a new plan
       setEditingPlan(null)
       setFormData({
         plan: "monthly",
@@ -94,17 +88,15 @@ export default function HealthyPrices() {
     setOpenDialog(true)
   }
 
-  // Close the dialog
   const handleCloseDialog = () => {
     setOpenDialog(false)
     setEditingPlan(null)
   }
 
-  // Handle plan creation or update
   const handleSubmit = async () => {
     try {
       const response = await fetch(`${API_BASE}/healthy-subscriptions`, {
-        method: "POST", // Backend handles create/update the same way
+        method: "POST",
         headers: {
           "Content-Type": "application/json",
           ...getAuthHeaders(),
@@ -127,10 +119,8 @@ export default function HealthyPrices() {
     }
   }
 
-  // Format cents into readable USD
   const formatPrice = (cents) => `$${(cents / 100).toFixed(2)}`
 
-  // Format plan name to start with a capital letter
   const getPlanLabel = (plan) => plan.charAt(0).toUpperCase() + plan.slice(1)
 
   if (loading) {
@@ -145,14 +135,12 @@ export default function HealthyPrices() {
 
   return (
     <Box>
-      {/* Error Alert */}
       {error && (
         <Alert severity="error" sx={{ mb: 3 }} onClose={() => setError(null)}>
           {error}
         </Alert>
       )}
 
-      {/* Header + Add Button */}
       <Box sx={{ display: "flex", justifyContent: "space-between", mb: 3 }}>
         <h2 className="text-2xl font-semibold text-foreground">Subscription Prices</h2>
         <Button
@@ -165,7 +153,6 @@ export default function HealthyPrices() {
         </Button>
       </Box>
 
-      {/* Table Section */}
       <TableContainer component={Paper}>
         <Table>
           <TableHead>
@@ -204,7 +191,6 @@ export default function HealthyPrices() {
         </Table>
       </TableContainer>
 
-      {/* Dialog for Add/Edit */}
       <Dialog open={openDialog} onClose={handleCloseDialog} maxWidth="sm" fullWidth>
         <DialogTitle>{editingPlan ? "Edit Subscription Plan" : "Add Subscription Plan"}</DialogTitle>
         <DialogContent>
@@ -236,11 +222,7 @@ export default function HealthyPrices() {
 
         <DialogActions sx={{ px: 3, pb: 2 }}>
           <Button onClick={handleCloseDialog}>Cancel</Button>
-          <Button
-            onClick={handleSubmit}
-            variant="contained"
-            disabled={!formData.plan || !formData.price_cents}
-          >
+          <Button onClick={handleSubmit} variant="contained" disabled={!formData.plan || !formData.price_cents}>
             {editingPlan ? "Update" : "Create"}
           </Button>
         </DialogActions>

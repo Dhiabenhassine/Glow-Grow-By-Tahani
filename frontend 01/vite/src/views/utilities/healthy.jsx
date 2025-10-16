@@ -48,20 +48,22 @@ export default function HealthyPackagesManagement() {
   const [viewingImages, setViewingImages] = useState(null)
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
 
-  const API_BASE = import.meta.env.VITE_API_BASE_ADMIN;
+  const API_BASE = import.meta.env.VITE_API_BASE_ADMIN
 
   useEffect(() => {
     fetchPackages()
   }, [])
- const getAuthHeaders = () => {
+
+  const getAuthHeaders = () => {
     const token = localStorage.getItem("token")
     return token ? { Authorization: `Bearer ${token}` } : {}
   }
+
   const fetchPackages = async () => {
     try {
       setLoading(true)
-      const response = await fetch(`${API_BASE}/healthy-packages`,{
-         headers: {
+      const response = await fetch(`${API_BASE}/healthy-packages`, {
+        headers: {
           "Content-Type": "application/json",
           ...getAuthHeaders(),
         },
@@ -176,6 +178,9 @@ export default function HealthyPackagesManagement() {
 
       const response = await fetch(url, {
         method,
+        headers: {
+          ...getAuthHeaders(),
+        },
         body: formDataToSend,
       })
 
@@ -197,6 +202,9 @@ export default function HealthyPackagesManagement() {
     try {
       const response = await fetch(`${API_BASE}/healthy-packages/${id}`, {
         method: "DELETE",
+        headers: {
+          ...getAuthHeaders(),
+        },
       })
       if (!response.ok) {
         const errorData = await response.json().catch(() => null)
@@ -206,10 +214,6 @@ export default function HealthyPackagesManagement() {
     } catch (err) {
       setError(err instanceof Error ? err.message : String(err))
     }
-  }
-
-  const formatPrice = (cents) => {
-    return `$${(cents / 100).toFixed(2)}`
   }
 
   if (loading) {
@@ -262,7 +266,7 @@ export default function HealthyPackagesManagement() {
           <TableBody>
             {packages.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={8} align="center" sx={{ py: 4 }}>
+                <TableCell colSpan={7} align="center" sx={{ py: 4 }}>
                   <p className="text-muted-foreground">No healthy packages found. Create your first package!</p>
                 </TableCell>
               </TableRow>
@@ -310,12 +314,12 @@ export default function HealthyPackagesManagement() {
                     )}
                   </TableCell>
                   <TableCell sx={{ fontWeight: 500 }}>{pkg.name}</TableCell>
-                  <TableCell sx={{ width: 800 }}>
+                  <TableCell sx={{ maxWidth: 300 }}>
                     <p className="truncate">{pkg.description}</p>
                   </TableCell>
                   <TableCell>{pkg.duration_days}</TableCell>
                   <TableCell>
-                    <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5,width: 300 }}>
+                    <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5, maxWidth: 300 }}>
                       {Array.isArray(pkg.features) && pkg.features.length > 0 ? (
                         pkg.features
                           .slice(0, 2)
@@ -487,7 +491,7 @@ export default function HealthyPackagesManagement() {
           <Button
             onClick={handleSubmit}
             variant="contained"
-            disabled={!formData.name || !formData.description || !formData.duration_days }
+            disabled={!formData.name || !formData.description || !formData.duration_days}
           >
             {editingPackage ? "Update" : "Create"}
           </Button>
@@ -507,6 +511,7 @@ export default function HealthyPackagesManagement() {
               src={
                 viewingImages?.images[currentImageIndex]?.url ||
                 viewingImages?.images[currentImageIndex] ||
+                "/placeholder.svg" ||
                 "/placeholder.svg" ||
                 "/placeholder.svg"
               }

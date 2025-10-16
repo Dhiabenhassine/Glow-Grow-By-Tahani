@@ -4,9 +4,7 @@ dotenv.config();
 
 let connected = false;
 
-/* =======================
-   User Schema
-======================= */
+
 const userSchema = new mongoose.Schema({
   email: { type: String, unique: true, required: true },
   password_hash: String,
@@ -52,9 +50,7 @@ const packPurchaseSchema = new mongoose.Schema({
   paypal_order_id: { type: String },
   created_at: { type: Date, default: Date.now }
 });
-/* =======================
-   Course / Lessons
-======================= */
+
 const courseImageSchema = new mongoose.Schema({
   course_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Course' },
   image_url: String,
@@ -80,14 +76,10 @@ const courseSchema = new mongoose.Schema({
   created_at: { type: Date, default: Date.now }
 });
 
-
-
 // Ensure user can only purchase a given pack once
 //packPurchaseSchema.index({ user_id: 1, pack_id: 1 }, { unique: true });
 
-/* =======================
-   Subscription Schema
-======================= */
+
 const subscriptionSchema = new mongoose.Schema({
   user_id: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   pack_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Pack' },
@@ -107,18 +99,13 @@ subscriptionSchema.pre('save', function (next) {
   next();
 });
 
-/* =======================
-   Promotion Schema
-======================= */
 const promotionSchema = new mongoose.Schema({
   type: { type: String, required: true },
   value: { type: Number, required: true },
   valid_from: Date,
   valid_to: Date,
 });
-/* =======================
-   Healthy Package Schema
-======================= */
+
 const healthyPackageSchema = new mongoose.Schema({
   name: { type: String, required: true },             // e.g., "Weight Loss Plan"
   description: { type: String },                      // Description of the package
@@ -150,11 +137,6 @@ const healthyPriceSchema = new mongoose.Schema({
   updated_at: { type: Date, default: Date.now }
 });
 
-
-
-/* =======================
-   Export Models
-======================= */
 export const models = {};
 
 export async function initDb() {

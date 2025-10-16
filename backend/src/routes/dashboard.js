@@ -16,9 +16,6 @@ router.get('/total-users', async (req, res) => {
   }
 });
 
-/* ============================================================
-   2️⃣  Active Subscriptions
-============================================================ */
 router.get('/active-subscriptions', async (req, res) => {
   const { Subscription } = getDb();
   try {
@@ -30,9 +27,6 @@ router.get('/active-subscriptions', async (req, res) => {
   }
 });
 
-/* ============================================================
-   3️⃣  Expired Subscriptions
-============================================================ */
 router.get('/expired-subscriptions', async (req, res) => {
   const { Subscription } = getDb();
   try {
@@ -44,9 +38,6 @@ router.get('/expired-subscriptions', async (req, res) => {
   }
 });
 
-/* ============================================================
-   4️⃣  Total Income (All Time)
-============================================================ */
 router.get('/total-income', async (req, res) => {
   const { PackPurchase } = getDb();
   try {
@@ -63,9 +54,6 @@ router.get('/total-income', async (req, res) => {
   }
 });
 
-/* ============================================================
-   5️⃣  Monthly Income (Current Month)
-============================================================ */
 router.get('/monthly-income', async (req, res) => {
   const { PackPurchase } = getDb();
   try {
@@ -91,9 +79,6 @@ router.get('/monthly-income', async (req, res) => {
   }
 });
 
-/* ============================================================
-   6️⃣  Top 5 Selling Packs
-============================================================ */
 router.get('/top-packs', async (req, res) => {
   const { PackPurchase } = getDb();
   try {
@@ -128,9 +113,6 @@ router.get('/top-packs', async (req, res) => {
   }
 });
 
-/* ============================================================
-   7️⃣  Daily Income Trend (For Charts)
-============================================================ */
 router.get('/daily-income-trend', async (req, res) => {
   const { PackPurchase } = getDb();
   try {
@@ -157,9 +139,6 @@ router.get('/daily-income-trend', async (req, res) => {
   }
 });
 
-/* ============================================================
-   8️⃣  User Signup Trend
-============================================================ */
 router.get('/user-signup-trend', async (req, res) => {
   const { User } = getDb();
   try {

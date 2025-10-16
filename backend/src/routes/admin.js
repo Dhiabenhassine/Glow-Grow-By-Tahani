@@ -599,7 +599,10 @@ router.patch("/healthy-packages/:id",  uploadImage.array("images"),requireAuth, 
       if (name !== undefined) updateData.name = name;
       if (description !== undefined) updateData.description = description;
       if (duration_days !== undefined) updateData.duration_days = duration_days;
-      if (is_published !== undefined) updateData.is_published = !!is_published;
+if (is_published !== undefined) {
+  updateData.is_published =
+    is_published === "true" || is_published === true;
+}
 
       // Handle features
       if (features) {

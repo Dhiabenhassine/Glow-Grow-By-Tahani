@@ -4,6 +4,53 @@ import { getDb } from '../lib/db.js';
 
 const router = express.Router();
 
+router.get('/categories', async (req, res, next) => {
+  try {
+    const { Category } = getDb();
+    const categories = await Category.find().sort({ name: 1 }).lean();
+
+    res.json(categories.map(c => ({
+      id: c._id,
+      name: c.name,
+      slug: c.slug,
+      image_url: c.image_url,
+    })));
+  } catch (err) {
+    next(err);
+  }
+});
+router.get('/packs/:id', async (req, res, next) => {
+  try {
+    const { Pack, Course } = getDb();
+    const pack = await Pack.findById(req.params.id)
+      .populate('category_id', 'name slug')
+      .lean();
+
+    if (!pack) return res.status(404).json({ error: 'Pack introuvable' });
+
+    const courses = await Course.find({ pack_id: pack._id, is_published: true })
+      .select('title description coach_name created_at')
+      .lean();
+
+    res.json({
+      id: pack._id,
+      name: pack.name,
+      description: pack.description,
+      category_name: pack.category_id?.name,
+      plans: pack.plans,
+      courses: courses.map(c => ({
+        id: c._id,
+        title: c.title,
+        description: c.description,
+        coach_name: c.coach_name,
+      })),
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
+/*
 router.get('/', async (req, res, next) => {
   try {
     const { Course, Category, CourseImage } = getDb();

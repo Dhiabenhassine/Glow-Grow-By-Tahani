@@ -1,4 +1,7 @@
 import PropTypes from 'prop-types';
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
+
 // material-ui
 import { styled, useTheme } from '@mui/material/styles';
 import Avatar from '@mui/material/Avatar';
@@ -46,6 +49,19 @@ const CardWrapper = styled(MainCard)(({ theme }) => ({
 
 export default function TotalIncomeDarkCard({ isLoading }) {
   const theme = useTheme();
+  const [totalIncome, setTotalIncome] = useState(null);
+
+  useEffect(() => {
+    const fetchTotalIncome = async () => {
+      try {
+        const res = await axios.get('/api/total-income'); // ✅ adjust path if needed
+        setTotalIncome(res.data.totalIncomeUSD);
+      } catch (error) {
+        console.error('Error fetching total income:', error);
+      }
+    };
+    fetchTotalIncome();
+  }, []);
 
   return (
     <>
@@ -77,7 +93,7 @@ export default function TotalIncomeDarkCard({ isLoading }) {
                   }}
                   primary={
                     <Typography variant="h4" sx={{ color: '#fff' }}>
-                      $203k
+                      {totalIncome !== null ? `$${Number(totalIncome).toLocaleString()}` : 'Loading...'}
                     </Typography>
                   }
                   secondary={
