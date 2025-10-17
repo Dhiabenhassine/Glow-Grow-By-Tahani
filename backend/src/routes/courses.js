@@ -19,6 +19,31 @@ router.get('/categories', async (req, res, next) => {
     next(err);
   }
 });
+router.get('/categories/:slug/packs', async (req, res, next) => {
+  try {
+    const { Category, Pack } = getDb();
+    const category = await Category.findOne({ slug: req.params.slug }).lean();
+    if (!category) return res.status(404).json({ error: 'Catégorie introuvable' });
+
+    const packs = await Pack.find({ category_id: category._id, is_published: true })
+      .populate('category_id', 'name')
+      .sort({ created_at: -1 })
+      .lean();
+
+    res.json(
+      packs.map(p => ({
+        id: p._id,
+        name: p.name,
+        description: p.description,
+        category_name: p.category_id?.name,
+        plans: p.plans,
+        is_published: p.is_published,
+      }))
+    );
+  } catch (err) {
+    next(err);
+  }
+});
 router.get('/packs/:id', async (req, res, next) => {
   try {
     const { Pack, Course } = getDb();
@@ -45,6 +70,83 @@ router.get('/packs/:id', async (req, res, next) => {
         coach_name: c.coach_name,
       })),
     });
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.post('/packs/:id/purchase', requireAuth, async (req, res, next) => {
+  try {
+    const { Pack, PackPurchase } = getDb();
+    const userId = req.user.id;
+    const { plan, payment_method, paypal_order_id } = req.body;
+
+    const pack = await Pack.findById(req.params.id).lean();
+    if (!pack) return res.status(404).json({ error: 'Pack introuvable' });
+
+    // Check if already purchased
+    const existingPurchase = await PackPurchase.findOne({ user_id: userId, pack_id: pack._id });
+    if (existingPurchase) {
+      return res.status(400).json({ error: 'Vous avez déjà acheté ce pack.' });
+    }
+
+    // Find selected plan
+    const selectedPlan = pack.plans.find(p => p.label === plan);
+    if (!selectedPlan) {
+      return res.status(400).json({ error: 'Plan invalide' });
+    }
+
+    // Simulate payment (you’ll integrate PayPal/Stripe here)
+    const paymentSuccess = true; // Replace this with actual payment verification logic
+
+    if (!paymentSuccess) {
+      return res.status(400).json({ error: 'Échec du paiement' });
+    }
+
+    // Save purchase
+    const newPurchase = new PackPurchase({
+      user_id: userId,
+      pack_id: pack._id,
+      amount_cents: selectedPlan.price_cents,
+      currency: 'USD',
+      status: 'completed',
+      paypal_order_id,
+    });
+
+    await newPurchase.save();
+
+    res.json({ success: true, message: 'Pack acheté avec succès.' });
+  } catch (err) {
+    next(err);
+  }
+});
+router.get('/packs/:id/courses', requireAuth, async (req, res, next) => {
+  try {
+    const { Pack, Course, PackPurchase } = getDb();
+    const userId = req.user.id;
+
+    // Check if the user purchased this pack
+    const hasAccess = await PackPurchase.findOne({
+      user_id: userId,
+      pack_id: req.params.id,
+      status: 'completed',
+    });
+
+    if (!hasAccess) {
+      return res.status(403).json({ error: 'Accès refusé : vous devez acheter ce pack.' });
+    }
+
+    const courses = await Course.find({ pack_id: req.params.id })
+      .select('title description coach_name created_at')
+      .lean();
+
+    res.json(courses.map(c => ({
+      id: c._id,
+      title: c.title,
+      description: c.description,
+      coach_name: c.coach_name,
+      created_at: c.created_at,
+    })));
   } catch (err) {
     next(err);
   }
