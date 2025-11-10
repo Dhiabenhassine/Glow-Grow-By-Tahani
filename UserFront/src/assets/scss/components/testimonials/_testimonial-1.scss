@@ -1,0 +1,351 @@
+// Testimonial 1
+.testimonial-1 {
+	position:relative;
+	text-align: center;
+	@include transitionMedium;
+	margin-top: 20px;
+	
+	.testimonial-text{
+		font-size: 22px;
+	    max-width: 800px;
+	    margin-left: auto;
+	    margin-right: auto;
+		margin-bottom: 20px;
+		margin-top: 20px;
+	    text-transform: capitalize;
+		@include respond('laptop'){
+			font-size: 20px;
+	    }
+		@include respond('tab-land'){
+			font-size: 18px;
+			max-width: 700px;
+			margin-bottom: 20px;
+			margin-top: 20px;
+		}
+		@include respond('phone-land'){
+			font-size: 16px;
+		}
+	}
+	.testimonial-name{
+		margin-bottom: 3px;
+		line-height: 1.2;
+	}
+	.testimonial-position {
+		font-size: 16px;
+		font-weight: 500;
+	}
+	.testimonial-rating{
+		display: flex;
+		margin-top:8px;
+		justify-content: center;
+		i {
+			color: #FFAF29;
+			font-size: 16px;
+			margin: 0 4px;
+		}
+	}
+	.testimonial-pic{
+		height: 110px;
+		width: 110px;
+		min-width: 110px;
+		border-radius:100%;
+		overflow: hidden;
+		margin-bottom: 5px;
+		position: relative;
+		border: 5px solid #fff;
+		box-shadow: 0px 4px 35px 0px rgba(0, 0, 0, 0.15);
+		
+		@include respond('tab-port'){
+			height: 80px;
+			width: 80px;
+			min-width: 80px;
+			border-width: 3px;
+		}
+		@include respond('phone'){
+			height: 60px;
+			width: 60px;
+			min-width: 60px;
+			margin-bottom: 0px;
+		}
+	}
+	@include respond('laptop'){
+		margin-top: 0px;
+    }
+	
+	&.testimonial-left{
+		display: flex;
+		text-align: left;
+		width: 100%;
+		align-items: center;	
+		justify-content: center;
+	
+		.testimonial-rating{
+			margin: 0 -5px;
+		}
+		.testimonial-info{
+			padding-left: 40px;
+			@include respond('phone'){
+				p{
+					font-size: 14px;
+				}
+			}
+		}
+		.testimonial-pic{
+			min-width: 320px;
+			height: 320px;
+			
+			img{
+				height: 100%;
+				object-fit: cover;
+			}
+		}
+		.testimonial-text{
+			margin-bottom: 35px;
+			margin-top: 25px;
+		}
+		
+		@include respond('tab-land'){
+			.testimonial-pic{
+				min-width: 200px;
+				height: 200px;
+			}
+		}
+		@include respond('tab-port'){
+			flex-direction: column;
+			
+			.testimonial-pic{
+				min-width: 100px;
+				height: 100px;
+				margin-bottom: 25px;
+			}
+			.testimonial-info{
+				padding: 0;
+				text-align: center;
+			}
+			.testimonial-rating{
+				justify-content: center!important;
+			}
+			.testimonial-text {
+				margin-bottom: 25px;
+				margin-top: 15px;
+			}
+		}
+		@include respond('phone'){
+			.testimonial-text {
+				margin-bottom: 15px;
+			}
+		}
+	}
+}
+.testimonial-wrapper1{
+	overflow: hidden;
+	background-color: var(--rgba-primary-1);
+	
+	.svg-shape{
+		position: absolute;
+		top: -30%;
+		left: -12%;
+	    z-index: -3;
+		@include respond('laptop'){
+			left: -15%;
+    		width: 37%;
+    		top: -28%;
+	    }
+	    @include custommq($max: 1199px) {
+			left: -15%;
+		    width: 38%;
+		    top: -25%;
+		}
+	    @include respond('tab-port'){
+			left: -25%;
+    		width: 55%;
+    		top: -40%;
+		}
+	    @include respond('phone'){
+    		width: 65%;
+    		height: 80%;
+		    left: -35%;
+		    top: -40%;
+	    }
+	}
+	.svg-shape-2 {
+		position: absolute;
+		bottom: -80%;
+		right: -30%;
+	    z-index: -3;
+	    @include respond('laptop'){
+			bottom: -40%;
+		    right: -15%;
+		    height: 550px;
+	    }
+	    @include custommq ($max:1199px){
+    	 	right: -25%;
+			height: 490px;
+	    }
+	    @include respond('phone-land'){
+			bottom: -30%;
+		    right: -50%;
+		    height: 350px;
+	    }
+	    @include respond('phone'){
+			bottom: -30%;
+		    right: -40%;
+		    height: 310px;
+	    }
+	}
+	.num-pagination {
+		justify-content: center;
+		margin-top: 40px;
+		
+		.swiper-pagination{
+		    margin: 0 50px;
+		}
+		@include respond('phone'){
+			margin-top: 30px;
+			.swiper-pagination{
+				margin: 0 15px;
+			}
+		}
+	}
+	&:before{
+	    content: attr(data-text);
+		position: absolute;
+		font-weight: 700;
+		font-size: 200px;
+		line-height: 1.15;
+		font-family: var(--font-family-title);
+		z-index: 0;
+		left: 50%;
+		transform: translateX(-50%);
+		bottom: 0%;
+		color: #fff;
+		filter: drop-shadow(0px 20px 30px rgba(0, 0, 0, 0.1));
+		opacity: 0.3;
+		
+		@include respond('laptop'){
+			font-size: 150px;
+		}
+		@include respond('tab-land'){
+			font-size: 100px;			
+		}
+		@include respond('phone-land'){
+			font-size: 80px;
+		}
+		@include respond('phone'){
+			font-size: 60px;
+		}
+	}
+	.avatar1,
+	.avatar2,
+	.avatar3,
+	.avatar4,
+	.avatar5,
+	.avatar6{
+		position: absolute;
+		
+		img{
+			overflow: hidden;
+			border-radius: 100%;
+			border: 4px solid #fff;
+			box-shadow: 0px 10px 40px 0px rgba(74, 34, 11, 0.1);
+			height: 110px;
+			width: 110px;
+
+			@include respond('tab-land'){
+				height: 80px;
+				width: 80px;
+			}
+			@include respond('tab-port'){
+				height: 60px;
+				width: 60px;
+			}
+		}
+		@include respond('phone'){
+			display: none;
+		}
+	}
+	.avatar1{
+		top: 21%;
+		left: 5%;
+		animation: move7 5s infinite linear;
+	}
+	.avatar2{
+		bottom: 10%;
+		left: -1%;
+		animation: move7 6s infinite linear;
+		img{
+			transform: scale(0.91);
+		}
+	}
+	.avatar3{
+		bottom: 30%;
+		left: 16%;
+		animation: move7 4.5s infinite linear;
+		img{
+			transform: scale(0.72);
+		}
+	}
+	.avatar4{
+		top: 16%;
+		right: 17%;
+		animation: move7 6s infinite linear;
+		img{
+			transform: scale(0.55);
+		}
+	}
+	.avatar5{
+		top: 45%;
+		right: -2%;
+		animation: move7 5s infinite linear;
+		img{
+			transform: scale(0.91);
+		}
+	}
+	.avatar6{
+		right: 13%;
+		bottom: 17%;
+		animation: move7 4.5s infinite linear;
+		img{
+			transform: scale(0.82);
+		}
+	}
+}
+.testimonial-wrapper2 {
+	position: relative;
+	overflow: hidden;
+	
+	.swiper-slide {
+	    max-width: 745px;
+		opacity: 0.3;
+		margin: 0 15px;
+		@include transitionMedium;
+		
+		@include respond('tab-land'){
+			max-width: 600px;
+		}
+		@include respond('tab-port'){
+			max-width: 500px;
+		}
+		@include respond('phone-land'){
+			max-width: 100%;
+			padding: 0 15px;
+		}
+		
+		&.swiper-slide-active{
+	    	opacity: 1;
+	    	.testimonial-2{
+				background-color: var(--secondary);
+				
+				.testimonial-text{
+					color: #fff;
+				}
+				.testimonial-name{
+					color: var(--primary);
+				}
+				.testimonial-position{
+					color: rgba(255, 255, 255, 0.7);
+				}
+			}
+	    }
+	}
+}

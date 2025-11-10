@@ -1,0 +1,96 @@
+// ft-clients
+.site-footer{
+	&.style-1{
+		color: #444444;
+		background-position: center;
+	    overflow: hidden;
+		background-color: #fff;
+		background-size: cover;
+		.footer-title{
+		    display: inline-block;
+	        padding-bottom: 15px;
+			&:after,
+			&:before {
+				content: '';
+				position: absolute;
+				bottom: 0;
+				height: 5px;
+				transform: skewX(-20deg);
+				background: var(--primary);
+			}
+			&:after {
+				left: 0;
+				width: 55px;
+			}
+			&:before {
+				left: 60px;
+				width: 7px;
+			}
+		}
+		.footer-logo{
+			img{
+				max-width:240px;
+			}
+		}
+		.girl-img {
+			position: absolute;
+			left: 0;
+			bottom: 0;
+			z-index: 1;
+			
+			@include respond('laptop'){
+				width: 250px;
+			}
+			@include respond('tab-land'){
+				width: 150px;
+			}
+			@include respond('phone-land'){
+				display: none;
+			}
+		}
+		&.footer-action{
+			.footer-top{
+				padding-top: 200px;
+				
+				@include respond('tab-land'){
+					padding-top: 180px;
+				}
+				@include respond('phone-land'){
+					padding-top: 160px;
+				}
+			}
+		}
+		.widget-post-bx{
+			@include respond('tab-port-min'){
+				padding-right: 30px;
+			}
+		}
+		.footer-bottom {
+			.copyright-text {
+				@include respond('phone'){
+					font-size: 14px;
+				}
+			}
+		}
+	}
+	&.bg-dark{
+		color: rgba(255,255,255,0.6);
+		
+		p{
+			color: rgba(255,255,255,0.6);
+		}
+		h1, h2, h3, h4, h5, h6,
+		h1 a, h2 a, h3 a, h4 a, h5 a, h6 a{
+			color: #fff;
+		}
+		.post-date{
+			color: var(--primary);
+		}
+		.footer-bottom{
+			border-top: 1px solid rgba(255, 255, 255, 0.1);
+		}
+		.recent-posts-entry .widget-post-bx .widget-post:not(:last-child) {
+			border-image-source: linear-gradient(90deg, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0) 100%);
+		}
+	}
+}

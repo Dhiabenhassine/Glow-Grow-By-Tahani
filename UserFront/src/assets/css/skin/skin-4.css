@@ -1,0 +1,41 @@
+:root{
+	
+	/* Primary */
+	--primary: #b8c724;
+	--primary-hover: #a4b316;
+	--primary-dark: #a7b70e;
+	
+	/* Primary RGBA */
+	--rgba-primary-1: rgba(184,199,36,0.1);
+	--rgba-primary-2: rgba(184,199,36,0.2);
+	--rgba-primary-3: rgba(184,199,36,0.3);
+	--rgba-primary-4: rgba(184,199,36,0.4);
+	--rgba-primary-5: rgba(184,199,36,0.5);
+	--rgba-primary-05: rgba(184,199,36,0.05);
+	--rgba-primary-6: rgba(184,199,36,0.6);
+	--rgba-primary-7: rgba(184,199,36,0.7);
+	--rgba-primary-8: rgba(184,199,36,0.8);
+	--rgba-primary-9: rgba(184,199,36,0.9);
+	
+	/* Other */
+	--secondary: #232323;
+	--theme-text-color: #fff;
+	--title: #000000;
+	
+	/* Gradient */
+	--gradient: linear-gradient(89deg, #a8b900 1.12%, #b8c724 44%);
+	--gradient-1: linear-gradient(90deg, #b4c509 47.55%, #b8c724 100.15%);
+	--gradient-2: linear-gradient(90deg, #b8c724 0%, #abbb14 100%);
+	--gradient-3: linear-gradient(180deg, var(--primary) 0%, #839100 100%);	
+	
+	/* Box Shadow */
+	--primary-shadow: linear-gradient(90deg, #fcde3b 47.55%, #ebc600 100.15%);
+	
+	/* extra variable */
+	--theme2-bg-pattern1: url(../images/pattern/theme/bg-pattern4.svg);
+	
+	--theme3-bg-color: #171809;
+	--theme3-secondary: #0f1006;
+	--theme3-secondary2: #df7056;
+	
+}

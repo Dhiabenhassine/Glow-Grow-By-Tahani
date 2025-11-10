@@ -1,0 +1,282 @@
+// dz-accordion
+.dz-accordion{
+	.accordion-item{
+		background: #fff;
+		margin-bottom: 20px;
+		border: 0;
+		
+		@include respond('phone'){
+			margin-bottom: 15px;
+		}
+	}
+	.accordion-body{
+		padding: 25px 30px;
+		border-radius: 0;
+		
+		@include respond('phone'){
+			padding: 15px;
+		}
+	}
+	.accordion-collapse{
+		border: 0;
+		border: 0;
+	    border-radius: 0 !important;
+	}
+	&.dz-accordion-skew{
+		.accordion-item{
+			margin-bottom: 20px;			
+			
+			@include respond('phone'){
+				margin-bottom: 15px;
+			}
+		}
+		.accordion-body{
+			padding: 20px 25px;
+			border-radius: 0;
+			
+			@include respond('phone'){
+				padding: 15px 15px;
+			}
+		}
+		.accordion-header{
+			transform: skewX(-12deg);
+			background: var(--rgba-primary-1);
+			border-left: 3px solid var(--primary);
+			
+			.accordion-button{
+				transform: skewX(12deg);
+				font-size: 16px;
+				border: 0;
+				font-weight: 600;
+				border-radius: 0;
+				padding: 18px 60px 18px 25px;
+				transition: all 0.5s;
+				color: black;
+				background-color: transparent;
+				box-shadow: unset;
+				
+				&:after{
+					content: none;
+				}
+				.toggle-close{
+					background-color: var(--primary);
+					font-family: themify;
+					height: 32px;
+					width: 32px;
+					line-height: 32px;
+					transform: skewX(-12deg);
+					display: flex;
+					align-items:center;
+					justify-content: center;
+					position: absolute;
+					right: 12px;
+					top: 12px;
+					text-align: center;
+					border-radius: 0;
+					font-size: 24px;
+					@include transitionMedium;
+					z-index:1;
+					overflow:hidden;
+					
+					&:before{
+						content: "\f105";
+						color: white;
+						font-size: 16px;
+						font-family: 'Font Awesome 6 Free';
+						z-index: 99;
+						opacity: 1;
+						transform: rotate(90deg) skewX(0deg) skewY(-12deg);
+						@include transitionMedium;
+						display:block;
+					}
+				}
+				
+				&.collapsed{
+					background: transparent;
+					color: inherit;
+					&:after{
+						opacity:0;
+					}
+					.toggle-close{
+						content: "";
+						&:after{
+							opacity:1;
+						}
+						&:before{
+							opacity: 1;
+							transform: rotate(0) skewX(12deg);
+						}
+					}
+					
+				}
+			}
+			@include respond('phone'){
+				.accordion-button{
+					padding: 14px 52px 14px 18px;
+					font-size: 15px;
+				}
+			}
+		}
+		&.skew-none{
+			.accordion-header{
+				transform: skewX(0);
+				
+				.accordion-button{
+					transform: skewX(0);				
+					.toggle-close{					
+						transform: skewX(0);
+						&:before{
+							transform: rotate(90deg) skewX(0deg) skewY(0);					
+						}
+					}
+					&.collapsed{
+						.toggle-close{					
+							&:before{
+								transform: rotate(0) skewX(0);
+							}
+						}
+					}
+				}				
+			}
+		}
+	}
+	&.dz-accordion-outline{
+		.accordion-item{
+			background:transparent;
+			margin-bottom: 20px;
+			border: 0;
+		}
+		.accordion-body{
+			padding: 20px 25px;
+			background-color: var(--secondary);
+			border-radius: 0;
+			color: #fff;
+			
+			@include respond('phone'){
+				padding: 15px;
+			}
+		}
+		.accordion-collapse{
+			border: 0;
+			border: 0;
+			border-radius: 0 !important;
+	
+		}
+		.accordion-header{
+			transform: skewX(0);
+			background: none;
+			.accordion-button{
+				transform: skewX(0);
+				font-size: 18px;
+				font-weight: 400;
+				border-radius: 0;
+				padding: 18px 65px 18px 25px;
+				@include transitionMedium;
+				color: var(--primary);
+				border: 1px solid var(--primary);
+				background-color: var(--secondary);
+				
+				&:after{
+					content: none;
+				}
+				.toggle-close{
+					height: 58px;
+					width: 58px;
+					transform: skewX(0);
+					display: flex;
+					align-items:center;
+					justify-content: center;
+					position: absolute;
+					right: 0px;
+					top: 0px;
+					line-height: 58px;
+					text-align: center;
+					border-radius: 0;
+					font-size: 16px;
+					@include transitionMedium;
+					z-index:1;
+					overflow:hidden;
+					
+					&:before{
+						content: "\f068";
+						color: var(--primary);
+						font-weight: 700;
+						font-size: 16px;
+						font-family: "Font Awesome 6 Free";
+						z-index: 99;
+						transform: none;
+						transition: all 0.5s;
+						line-height: 55px;
+						display: block;
+					}
+					
+					@include respond('tab-land'){
+						height: 55px;
+						width: 55px;
+						line-height: 55px;
+						font-size: 20px;
+						
+						&:before{
+							font-size: 24px;
+						}
+					}
+				}
+				
+				&.collapsed{
+					border: 1px solid #ffffff33;
+					background: var(--secondary);
+					color: #fff;
+					
+					.toggle-close{
+						&:before{
+							content: "\2b";
+						}
+					}
+					
+				}
+			}
+			@include respond('tab-land'){
+				.accordion-button{					
+					font-size:15px;
+				}
+			}
+			@include respond('phone'){
+				.accordion-button{
+					padding: 15px 65px 15px 15px;
+				}
+			}
+		}
+		&.accordion-sm{
+			.accordion-body {
+				padding: 20px;
+				@include respond('tab-land'){
+					padding: 18px;
+				}
+				@include respond('phone'){
+					padding: 15px;
+				}
+			}
+			.accordion-header{
+				.accordion-button{
+					padding: 18px 60px 18px 25px;
+					.toggle-close{
+						height: 100%;
+						width: 60px;
+						&:before{
+							font-size: 25px;
+							line-height: 60px;
+						}
+						@include respond('phone-land'){
+							width:50px;
+						}
+					}
+				}
+				@include respond('phone'){
+					.accordion-button{
+						padding: 15px 45px 15px 15px;
+					}
+				}
+			}
+		}
+	}
+}

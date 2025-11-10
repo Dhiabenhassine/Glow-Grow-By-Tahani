@@ -1,0 +1,140 @@
+#bg {
+    background-attachment: fixed;
+    background-size: cover;
+}
+.main-bar-wraper.sticky-no{
+	.main-bar {
+		position: unset;
+	}
+}
+
+@media only screen and (min-width: 1280px){
+	
+	// Boxed
+	.boxed{
+		.page-wraper{
+			max-width: 1280px;
+			margin: 0 auto;
+			position: relative;
+			overflow: hidden;
+			box-shadow: 0 0 60px rgba(0, 0, 0, 0.1);
+		}
+		.site-footer.style-1 .girl-img{
+			width: 200px;
+		}
+		.about-bx3 .dz-media .image-box {
+			height: 280px;
+			width: 280px;
+			top: -90px;
+			left: -30px;
+		}
+		.main-bnr-two{
+			.banner-inner{
+				min-height: 750px;
+				padding-top: 0;
+				.data-text{
+					top: 20%;
+					font-size: 250px;
+				}
+			}
+			.banner-media{
+				img{
+					max-width: 90%;
+				}
+			}
+		}
+		.main-bnr-three{
+			.banner-inner{
+				.banner-media{
+					img{
+						width: 56%;
+					}
+				}
+				.banner-content{
+					.title{
+						font-size: 120px;
+						
+						.left{
+							left: 10%;
+						}
+						.right{
+							right:0;
+							bottom: 30%;
+						}
+					}
+					
+				}
+				.data-text{
+					font-size: 250px;
+				}
+			}
+		}
+		
+		.site-header.style-1 .main-bar{
+			width: 1280px;
+			left: 50%;
+			transform: translateX(-50%);	
+		}
+
+		.section-wrapper-1{
+			margin: 0;
+		}
+
+		.testimonial-swiper-wrapper-3{
+			.dz-swiper-next3{
+				right: 0;
+			}
+			.dz-swiper-prev3{
+				left: 0;
+			}
+		}
+	}
+	
+	// Frame
+	.frame{
+		padding:30px;
+		
+		.page-wraper{
+			margin: 0 auto;
+			position: relative;
+			overflow: hidden;
+			box-shadow: 0 0 60px rgba(0, 0, 0, 0.1);
+			height: auto!important;
+		}
+		.is-fixed{
+			.main-bar {
+				left:0;
+				width: 100%;
+				margin: 0;
+				position: unset;
+			}
+		}
+		button.scroltop{
+			right:50px;
+			bottom:50px;
+		}
+	}
+}
+
+@media only screen and (max-width: 1280px){
+	.frame{
+		padding: 0 !important;
+	}
+	.frame button.scroltop{
+		right:15px;
+		bottom:15px;
+	}
+}
+
+.theme-sharped{
+	--border-radius-base: 0;
+	@include transitionNone;
+}
+.theme-rounded{
+	--border-radius-base: 10px;
+	@include transitionNone;
+}
+
+.theme-bg-color{
+	background-color: var(--theme-bg-color);
+}

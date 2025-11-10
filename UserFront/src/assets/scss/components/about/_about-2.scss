@@ -1,0 +1,197 @@
+.about-bx2{
+	.contact-us {
+		display: flex;
+		align-items: center;
+		.icon {
+			width: 70px;
+			height: 65px;
+			border-left: 5px solid var(--primary);
+			background: #fff;
+		    display: flex;
+		    align-items: center;
+		    justify-content: center;
+		    margin-right: 15px;
+		    box-shadow: 0px 10px 30px 0px rgba(255, 129, 57, 0.15);
+		    transform: skewX(-10deg);
+		    i {
+		    	transform: skewX(10deg);
+	    	    font-size: 24px;
+	    	    animation: move-lr 1.2s infinite;
+    			color: var(--primary);
+		    }
+		}
+		.content {
+			.number {
+				font-size: 28px;
+				font-weight: 600;
+				line-height: 1.2;
+				color: var(--primary);
+				margin-bottom: 0;
+				margin-top: 3px;
+			}
+			span{
+				color: #000;
+				margin: 0;
+				font-weight: 500;
+			}
+		}
+		@include respond ('tab-land'){
+			.icon {
+				width: 55px;
+				height: 50px;
+				border-left-width: 3px;
+				i {
+					font-size: 18px;
+				}
+			}
+			.content{
+				.number{
+					font-size: 24px;
+				}
+			}
+		}
+	}
+	.dz-media {
+		overflow: visible;
+		position: relative;
+		z-index: 1;
+		
+		img {
+		    box-shadow: 0px 15px 60px 0px rgba(0, 0, 0,0.15);
+    		border: 9px solid #fff;
+		}
+		.image-box {
+	    	position: relative;
+	    	.info-box {
+		    	position: absolute;
+		    	font-size: 18px;
+		    	font-weight: 500;
+		    	background: transparent;
+	    	    padding: 10px 25px 10px 20px;
+				bottom: 30%;
+				z-index: 1;
+				svg {
+					margin-right: 10px;
+				}
+				span {
+					display: flex;
+					align-items: center;
+					
+					i{
+						font-size: 20px;
+						margin-right: 8px;
+					}
+				}
+				&:after {	
+					content: '';
+					position:absolute;
+					height: 100%;
+					width: 5px;
+					left: 0;
+					top: 0;
+					transform: skewX(-10deg);
+					background: var(--primary);
+				}
+				&:before {	
+					content: '';
+					position:absolute;
+					top: 0;
+					left: 0;
+					z-index: -1;
+					height: 100%;
+					width: 100%;
+					opacity: 0.9;
+					background: #fff;
+					transform: skewX(-10deg);
+					@include transitionMedium;
+		    		box-shadow: 0px 10px 30px 0px rgba(0, 0, 0, 0.1);
+				}
+		   		&:hover {
+	    			&:before {
+	    				opacity: 1;
+	    				box-shadow: 0px 10px 25px 0px rgba(0, 0, 0, 0.15);
+	    			}
+	    		}
+		    }
+		}
+
+		.image-box:first-child {
+		    padding-right: 200px;
+		    margin-bottom: 35px;
+		    animation: move1 5s infinite;
+		    .info-box {
+    		    animation: move5 6s infinite;
+		    	right: 0;
+
+		    }
+		}
+		.image-box:last-child {
+		    animation: move1 6s infinite;
+		    padding-left: 120px;
+		    .info-box {
+	    		left: 0;
+    		    animation: move7 7s infinite;
+		    }
+		}
+		&:after {
+			content: '';
+			position: absolute;
+			height: 360px;
+			width: 360px;
+			right: 65px;
+			top: 35px;
+			border: 65px solid var(--primary);
+			box-shadow: 0px 5px 30px 0px var(--rgba-primary-5);
+			z-index: -1;
+			border-radius: 100%;
+			background: transparent;
+
+		}
+		@include respond ('tab-land'){
+			img {
+				border-width: 5px;
+			}
+			&:after{
+				height: 250px;
+				width: 250px;
+				right: 150px;
+				top: 60px;
+				border-width: 25px;
+			}
+		}
+		@include respond ('tab-port'){
+			&:after {
+				right: 120px;
+				top: 200px;
+			}
+		}
+		@include respond ('phone-land'){
+			&:after {
+				top: 120px;
+			}
+		}
+		@include respond ('phone'){
+			&:after {
+				height: 200px;
+				width: 200px;
+				right: 10px;
+				top: 80px;
+			}
+			.image-box{
+				&:first-child {
+					padding-right: 50px;
+				}
+				&:last-child {
+					padding-left: 50px;
+				}
+				.info-box {
+					font-size: 15px;
+					padding: 10px 20px 10px 15px;
+					svg {
+						margin-right: 5px;
+					}
+				}
+			}
+		}
+	}
+}

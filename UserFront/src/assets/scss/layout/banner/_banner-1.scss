@@ -1,0 +1,63 @@
+.dz-bnr-inr{
+	&.style-1 {
+		background-position: bottom left;
+		h1 {
+			color:var(--title);
+			font-size: 70px;
+			line-height: 1.2;
+			font-weight: 600;
+			margin-bottom: 20px;
+			@include respond('laptop'){
+				font-size: 55px;
+			}
+			@include respond('tab-port'){
+	    	    font-size: 44px;
+			}
+			@include respond('phone'){
+	    	    font-size: 32px;
+			}
+			
+		}
+		&:after {
+			content: attr(data-text);
+			position: absolute;
+			font-weight: 700;
+			font-size: 235px;
+			line-height: 1;
+			font-family: var(--font-family-title);
+			z-index: -2;
+			left: -20px;
+			color: #fff;
+			// filter: drop-shadow(0px 10px 40px rgba(255, 129, 57, 0.1));
+			opacity: 0.3;
+			bottom: -10%;
+			
+		    @include respond('laptop'){
+		    	font-size: 200px;
+		    	bottom: -15%;
+			}
+			@include respond('tab-port'){
+	    	    font-size: 150px;
+    			bottom: -10%;
+			}
+			@include respond('phone'){
+	    	    font-size: 60px;
+				bottom: -10px;
+			}
+			
+		}
+		.breadcrumb-row {
+			z-index: 1;
+			@include respond('phone-land'){
+				width:100%;
+			}
+		}
+	}
+}
+.style-1.header-transparent + .page-content .dz-bnr-inr{
+	padding-top: 130px;
+	
+	@include respond('tab-port'){
+		padding-top: 80px;
+	}
+}

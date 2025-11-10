@@ -1,0 +1,131 @@
+/* Background and layout */
+.auth-container {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-image: url("../images/loginimg.jpg");
+  background-size: cover;
+  background-position: center;
+  font-family: Arial, sans-serif;
+  padding: 20px; /* helps with spacing on small screens */
+}
+
+/* Card styling */
+.auth-card {
+  background: rgba(255, 255, 255, 0.3);
+  padding: 40px;
+  border-radius: 12px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+  width: 380px;
+  max-width: 100%; /* ensures it fits smaller screens */
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+/* Form elements */
+.auth-card h2 {
+  margin-bottom: 20px;
+  color: #000000;
+}
+
+.auth-card form {
+  display: flex;
+  flex-direction: column;
+}
+
+.auth-card input {
+  margin: 8px 0;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.auth-card button {
+  margin-top: 12px;
+  padding: 10px;
+  background-color: #f4f419;
+  color: rgb(0, 0, 0);
+  border: none;
+  border-radius: 6px;
+  font-size: 20px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.auth-card button:hover {
+  background-color: #a59200;
+}
+
+/* Switch text */
+.auth-card p {
+  margin-top: 15px;
+  font-size: 18px;
+  color: #000000;
+}
+
+.auth-card span {
+  color: #000000;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.auth-card span:hover {
+  text-decoration: underline;
+}
+
+/* ---------------------------- */
+/* 📱 RESPONSIVE DESIGN SECTION */
+/* ---------------------------- */
+
+/* Small devices (phones, up to 600px) */
+@media (max-width: 600px) {
+  .auth-container {
+    background-position: center;
+    padding: 10px;
+  }
+
+  .auth-card {
+    width: 70%;
+    padding: 25px;
+    border-radius: 10px;
+  }
+
+  .auth-card h2 {
+    font-size: 20px;
+  }
+
+  .auth-card input {
+    font-size: 13px;
+    padding: 8px;
+  }
+
+  .auth-card button {
+    font-size: 14px;
+    padding: 9px;
+  }
+}
+
+/* Medium devices (tablets, 601px–992px) */
+@media (min-width: 601px) and (max-width: 992px) {
+  .auth-card {
+    width: 60%;
+    padding: 35px;
+  }
+
+  .auth-card h2 {
+    font-size: 22px;
+  }
+
+  .auth-card button {
+    font-size: 15px;
+  }
+}
+
+/* Large devices (desktops, 993px and up) */
+@media (min-width: 993px) {
+  .auth-card {
+    width: 420px;
+  }
+}

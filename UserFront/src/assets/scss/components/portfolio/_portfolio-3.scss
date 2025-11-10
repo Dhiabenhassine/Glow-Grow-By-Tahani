@@ -1,0 +1,57 @@
+.dz-box.style-3{
+	overflow: hidden;
+    -webkit-transition: all 0.8s;
+    -ms-transition: all 0.8s;
+    transition: all 0.8s;
+
+	.dz-media{
+		background-size: cover;
+		display: block;
+		transition: all 0.8s ease 0s;
+		width: 100%;
+
+		overflow: hidden;
+		img{
+			@include transitionMedium;
+          
+		}
+		&:hover{
+			img{
+				transform:  scale(1.2) rotate(-5deg);
+			}
+		}
+	}
+	.dz-info{
+		position: absolute;
+		bottom: 0;
+		left: 0;
+		visibility: hidden;
+		opacity: 0;
+		padding: 20px;
+
+		.sub-title {
+			font-family: var(--font-family-base);
+		}
+		.title{
+			color: white;
+		}
+	}
+}
+
+.image-tooltip {	
+	position: absolute;
+	background: var(--secondary);
+	padding: 20px;
+	z-index: 999;
+	width: 0px; 
+	.title {
+		color: #fff;
+		white-space: nowrap; 
+	}
+	.sub-title {
+		white-space: nowrap;
+		color: var(--primary);
+		margin-bottom: 0; 
+	}
+
+}

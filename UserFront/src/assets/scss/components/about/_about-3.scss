@@ -1,0 +1,165 @@
+.about-bx3{
+	position: relative;
+	
+	&::after{
+		content: '';
+		position: absolute;
+		top: 10%;
+		right: 25%;
+		background: url('../images/background/pole.png');
+		width: 40%;
+		height: 80%;
+		background-repeat: no-repeat;
+		background-position: right bottom;
+		z-index: -1;
+	}
+	.dz-media{
+		overflow: visible;
+		position: relative;
+		width: 100%;
+		z-index: 10;
+		
+		&::before{
+			content: '';
+			position: absolute;
+			bottom: 0;
+			left: 0;
+			width: 74%;
+			height: 80px;
+			background: #232323;
+			clip-path: polygon(0 57%, 100% 0, 100% 100%, -1% 100%);
+			z-index: 1;
+
+			@include respond('tab-land'){
+				left: 50%;
+				transform: translateX(-50%);
+				bottom: -1px;
+			}
+		}
+		
+		img{
+			height: 100%;
+			width: 100%;
+			object-fit: cover;
+			object-position: center;
+			position: relative;
+		
+		}
+		.tag{
+			text-align: center;
+			display: inline-block;
+			position: absolute;
+			padding: 15px;
+			bottom: 15px;
+			left: 30px;
+			font-size: 20px;
+			background: var(--primary);
+			text-transform: uppercase;
+			z-index: 4;
+			@include respond('phone'){
+				max-width: 150px;
+				left: 15px;
+			}
+			h2{
+				
+				margin: 0;
+				letter-spacing: -3px;
+				font-weight: 700;
+				line-height: 1;
+				font-size: 6rem;
+				color: var(--theme-text-color);
+				font-family: 'Oswald', sans-serif;
+
+				@include respond('phone'){
+					font-size: 4rem;
+				}
+			}
+			h5{
+				font-weight: 500;
+				letter-spacing: 1px;
+				margin: 0;
+				margin-top: 5px;
+				font-size: 1rem;
+				color: var(--theme-text-color);
+				font-family: 'Oswald', sans-serif;
+			}
+			@include respond('phone'){
+				font-size: 0.8rem;
+			}
+		}
+	}
+	.dz-content{
+		.sub-title{
+			font-weight: 500;
+			font-size: 18px;
+			color: #666666;
+			@include respond('tab-land'){
+				font-size: 1rem;
+			}
+		}
+		.title{
+			font-size: 58px;
+			@include respond('tab-land'){
+				font-size: 40px;
+			}
+		}
+		
+		p{
+			font-weight: 400;
+			font-size: 16px;
+			color: #666666;	
+			
+
+		}
+		.description{
+			font-style: italic;
+			font-weight: 500;
+			font-size: 20px;
+			color: #232323;
+			@include respond('tab-land'){
+				font-size: 1rem;
+			}
+		}
+	}
+	.section-head{
+		margin-bottom: 20px;
+	}
+}
+.pr-list{
+	display: flow-root;
+	background: var(--rgba-primary-05);
+	border-left: 5px solid var(--primary);
+	padding: 15px 25px;
+	
+	li{
+		font-size: 20px;
+		width: 50%;
+		float: left;
+		font-weight: 400;
+		color: #232323;
+		font-style: italic;
+		font-weight: 400;
+		font-size: 20px;
+		padding: 5px 0;
+		display: flex;
+		align-items: center;
+		/* or 225% */
+		@include respond('tab-land'){
+			font-size: 1rem;
+			line-height: 2rem;
+		}
+		@include respond('phone'){
+			width: 100%;
+		}
+
+		/* Secondary-2 */
+
+		color: #232323;
+		i{
+			color: var(--primary);
+			margin-right: 8px;
+			font-size: 20px;
+			display: inline-flex;
+		}
+	}
+}

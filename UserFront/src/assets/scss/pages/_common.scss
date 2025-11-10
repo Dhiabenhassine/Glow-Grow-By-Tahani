@@ -1,0 +1,117 @@
+.gym-time-container {
+  height: 73.5vw;
+  max-height: 535px;
+  max-width: 500 px;
+  width: 98vw;
+  position: relative;
+  overflow: hidden;
+
+  figure {
+    background: url("/src/assets/images/after-before/before.jpg") no-repeat
+      center center;
+    background-size: cover;
+    position: absolute;
+    margin: 0;
+    height: 100%;
+    width: 100%;
+
+    div {
+      &:first-of-type {
+        background-image: url("/src/assets/images/after-before/after.jpg");
+        background-size: cover;
+        position: absolute;
+        height: 100%;
+        width: 50%;
+        box-shadow: 0 5px 10px -2px rgba(0, 0, 0, 0.3);
+        bottom: 0;
+
+        &::before,
+        &::after {
+          content: "";
+          position: absolute;
+          right: -2px;
+          width: 4px;
+          height: calc(50% - 25px);
+          background: white;
+          z-index: 3;
+        }
+        &::before {
+          top: 0;
+        }
+        &::after {
+          bottom: 0;
+        }
+      }
+
+      &:last-of-type {
+        border-radius: 100%;
+        background: white;
+        position: absolute;
+        height: 50px;
+        width: 50px;
+        top: 50%;
+        left: 50%;
+        transform: translateY(-50%) translateX(-50%);
+        z-index: 1;
+
+        &::before,
+        &::after {
+          content: "";
+          width: 0;
+          height: 0;
+          border: 6px inset transparent;
+          position: absolute;
+          top: 50%;
+          margin-top: -6px;
+        }
+        &::before {
+          border-right: 6px solid grey;
+          left: 50%;
+          margin-left: -17px;
+        }
+        &::after {
+          border-left: 6px solid grey;
+          right: 50%;
+          margin-right: -17px;
+        }
+      }
+    }
+  }
+
+  input[type="range"] {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    position: absolute;
+    top: 50%;
+    left: -25px;
+    transform: translateY(-50%);
+    background-color: transparent;
+    border: none;
+    width: calc(100% + 50px);
+    z-index: 2;
+
+    &:focus,
+    &:active {
+      border: none;
+      outline: none;
+    }
+  }
+
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    border: none;
+    height: 50px;
+    width: 50px;
+    border-radius: 50%;
+    background: transparent;
+  }
+
+  input[type="range"]::-moz-range-track {
+    -moz-appearance: none;
+    height: 15px;
+    width: 100%;
+    background-color: transparent;
+    position: relative;
+    outline: none;
+  }
+}

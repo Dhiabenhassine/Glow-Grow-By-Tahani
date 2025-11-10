@@ -1,0 +1,231 @@
+// site-header
+.site-header{
+	&.style-1{
+		.main-bar{
+			box-shadow: none;
+			background-color:transparent;
+			
+			.box-header{
+				position: relative;
+				
+				@include custommq($min: 1180px, $max: 1280px){
+					padding: 0 20px;
+				}
+				
+		    	&:after{
+					content: "";
+					box-shadow: 0px 14px 30px 0px rgba(225, 50, 0, 0.1);
+					background-color: #fff;
+					position: absolute;
+					left: 50%;
+					top: 0;
+					height: calc(100% - 1px);
+					z-index: -1;
+					width: calc(100% + 25px);
+					transform: translateX(-50%) skewX(-12deg);
+					
+					@include respond('tab-land'){
+						width: calc(100% + 20px);
+					}
+					@include custommq($min: 1200px, $max: 1240px){
+						width: calc(100% + -20px);
+					}
+					@include respond('tab-port'){
+						transform: translateX(-50%) skewX(0);
+					}
+				}
+			}
+		}
+		.container{
+			display: grid;
+		}
+		.extra-nav {
+			height: 80px;
+			padding-left: 60px;
+			
+			#quik-search-btn {
+			    font-size: 16px;
+			    transform: skewX(-12deg);
+			    border-radius: 0;
+			    margin-right: 5px;
+				
+			    i {
+				    transform: skewX(12deg);
+			    }
+				@include respond('tab-port'){
+					transform: skew(0);
+					margin-right: 0;
+					
+					i{
+						transform: skew(0);
+					}
+				}
+			}
+			.appointment-btn{
+				@include respond('tab-land'){
+					display: none;
+				}
+			}
+			@include respond('tab-land'){
+				padding-left: 30px;
+			}
+			@include respond('tab-port'){
+				height: 70px;
+			}
+		}
+		.logo-header{
+			height: 80px;
+			img {
+			    max-width: 240px;
+			}
+			@include respond('tab-land'){
+				img{
+					max-width: 180px;
+				}
+			}
+			@include respond('tab-port'){
+				height: 70px;
+			}
+		}
+		
+		// Header Nav
+		.header-nav{
+			.nav {
+				&>li {
+					&>a {
+						@include respond('tab-port-min'){
+							padding: 31px 15px;
+							&:before {
+								content: "";
+								background-color: var(--primary);
+								position: absolute;
+								left: 0;
+								bottom: 0;
+								transform: translateY(4px);
+								height: 4px;
+								z-index: 1;
+								width: 100%;
+								@include transitionMedium;
+								opacity: 0; 
+							}
+						}
+					}
+					&.active,
+					&:hover{
+						&>a {
+							@include respond('tab-port-min'){
+								&:before {
+									transform: translateY(0);
+									opacity: 1; 
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		.top-bar{
+			background-color:transparent;
+			border-bottom:0;
+		}
+		.is-fixed {
+			.main-bar {
+			    box-shadow: 0px 14px 30px 0px rgba(225, 50, 0,0.1);
+			    background-color: white;
+			    .box-header:after {
+			    	box-shadow:none;
+			    }
+			}
+		}
+		@include respond('tab-port'){
+			.navbar-toggler {
+				margin: 14px 0 14px 15px;				
+			}
+			.main-bar{
+				margin-top: 10px;
+			}
+		}
+	}
+	
+	&.style-2{
+		&.header-transparent{
+			padding-top: 10px;
+			.sticky-header,.sticky-no{
+				&:not(.is-fixed){
+					.header-nav .nav > li > a{
+						color: #fff;
+					}
+					.appointment-btn{
+						color: $dark;			
+						background: #fff;
+					}
+				}	
+			}
+			@include respond('tab-land'){
+				padding-top: 0;
+			}
+		}
+		.appointment-btn{
+			color: #fff;
+			background: $dark;
+		}
+		.header-search-btn{
+			&::after{
+				display: none;
+			}
+		}
+		#quik-search-btn {
+			font-size: 16px;
+			transform: skewX(-12deg);
+			border-radius: 0;
+			margin-right: 5px;
+			
+			i {
+				transform: skewX(12deg);
+			}
+			@include respond('tab-port'){
+				transform: skew(0);
+				margin-right: 0;
+				
+				i{
+					transform: skew(0);
+				}
+			}
+		}
+		@include respond('tab-port'){
+			.header-nav .nav > li > a {	
+				color: #000!important;
+			}
+		}
+	}
+}
+// New Page Badge
+
+.new-badge span {
+	background: var(--rgba-primary-1);
+    color: var(--primary);
+    display: inline-block !important;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 400;
+    line-height: 14px;
+    margin-left: 5px;
+    border: 0;
+}
+
+@keyframes shake2 {
+	0% {
+	  transform: skewX(-15deg); }
+	5% {
+	  transform: skewX(15deg); }
+	10% {
+	  transform: skewX(-15deg); }
+	15% {
+	  transform: skewX(15deg); }
+	20% {
+	  transform: skewX(0deg); }
+	100% {
+	  transform: skewX(0deg); } 
+	}
+  

@@ -1,0 +1,161 @@
+.about-bx4{
+	position: relative;
+	.dz-media {
+		overflow: visible;
+		margin-top: 80px;
+		
+		& > img {
+			height: 100%;
+			width: 100%;
+			object-fit: cover;
+			object-position: center;
+			clip-path: polygon(50% 0%, 100% 0, 100% 80%, 85% 100%, 51% 100%, 0 100%, 0 0);
+		}
+		@include respond('laptop'){
+            margin-top: 40px;
+	    }
+		@include respond('tab-port'){
+            padding: 0;
+		    max-width: 60%;
+		    text-align: center;
+		    margin: auto;
+		    margin-top: 40px;
+	    }
+		@include respond('phone-land'){
+            max-width: 75%;
+	    }
+		@include respond('phone'){
+            max-width: 95%;
+	    }
+		.image-box {
+			position: absolute;
+			height: 330px;
+			width: 330px;
+			top: -80px;
+			left: -90px;
+			z-index: 1;
+			.tag {
+				text-align: center;
+			    display: inline-block;
+			    position: absolute;
+			    padding: 15px;
+			    bottom: 0;
+			    right: 0;
+			    font-size: 20px;
+			    background: var(--primary);
+			    text-transform: uppercase;
+				h5 {
+			    	font-weight: 400;
+			    	letter-spacing: 1px;
+			    	margin: 0;
+                    font-family: 'Kenyan Coffee', sans-serif;
+					color: var(--theme-text-color);
+				}
+				h2 {
+			    	margin: 0;
+			    	letter-spacing: -3px;
+			    	font-weight: 400;
+					line-height: 1;
+				    font-size: 100px;
+                    font-family: 'Kenyan Coffee', sans-serif;
+					color: var(--theme-text-color);
+				}
+			}
+			&:after {
+				content: "";
+				position: absolute;
+				top: 20px;
+				left: 20px;
+				height:100%;
+				width: 100%;
+				z-index: -1;
+				background: #fff;
+				@include respond('phone'){
+					top: 10px;
+					left: 10px;
+				}
+			}
+			
+            @include respond('laptop'){
+                height: 270px;
+				width: 270px;
+				top: -60px;
+				left: -70px;
+				.tag {
+					h2 {
+						font-size: 70px;
+					}
+				}
+            }			
+            @include respond('tab-land'){
+            	height: 200px;
+				width: 200px;
+				top: -30px;
+				left: -10px;
+				.tag {
+					padding: 10px;
+					h2 {
+						font-size: 50px;
+					}
+					h5 {
+						font-size: 18px;
+					}
+				}
+
+            }
+            @include custommq ($max:1199px){
+				top: -60px;
+    			left: -35px;
+			}
+			@include respond('phone'){
+				height: 150px;
+				width: 150px;
+				top: -50px;
+				left: -15px;
+            	.tag {
+					padding: 7px;
+					h2 {
+						font-size: 40px;
+					}
+					h5 {
+						font-size: 15px;
+					}
+				}
+
+            }
+		}
+	}
+	.about-content {
+		.section-head {
+			margin-bottom: 20px;
+		}
+		
+		@include respond('laptop'){
+	        .pr-list{
+				li{
+					font-size: 20px;
+	    			padding: 1px 0;
+				}
+			}
+	    }
+	    @include custommq ($max:1199px){
+			p {
+				font-size: 15px;
+			}
+			.pr-list {
+				li{
+					font-size: 18px;
+	    			padding: 1px 0;
+				}
+			}
+		}
+		@include respond('phone'){
+			.pr-list{
+				li{
+					width: 100%;
+				}
+			}
+		}
+	}
+	
+}

@@ -1,0 +1,187 @@
+.counter-inner-1{
+	padding: 80px 60px 50px;
+	position:relative;
+	z-index:1;
+	margin: 0 -75px;
+	
+	.counter-box {
+		display: block;
+		text-align: center;
+		align-items: center;
+		justify-content: center;
+		.title {
+			margin:0;
+			color:#06C6D1;
+			font-size:80px;
+			font-weight: 700;
+		}
+		p {
+			margin:0;
+			color: #9A69F9
+			;
+			font-size: 24px;
+
+			@include respond('phone-land'){
+				font-size: 13px;
+			}
+		}
+		@include respond('phone'){
+			display:block;
+			text-align:center;
+		}
+	}
+	.triangle1 {
+		position: absolute;
+		top: 0;
+		left: 2px;
+		transform: translateY(-72%) rotate(8.5deg);
+	}
+	.triangle2 {
+		position: absolute;
+		bottom: 0;
+		right: 2px;
+		transform: translateY(72%) rotate(8.5deg);
+	}
+	@include respond('tab-land'){
+		padding: 50px 40px 20px;
+		margin: 0;
+		.counter-box{
+			.title {
+				font-size: 60px;
+			}
+			p {
+				font-size: 18px;
+			}
+		}
+	}
+	@include respond('tab-port'){
+		.counter-box{
+			.title {
+				font-size: 48px;
+			}
+			p {
+				font-size: 16px;
+			}
+		}
+	}
+	@include respond('phone-land'){
+		padding: 40px 30px 10px;
+		
+		.triangle1{
+			top: 10px;
+			left: 1px;
+			width: 120px;
+		}
+		.triangle2 {
+			bottom: 9px;
+			right: 1px;
+			width: 120px;
+		}
+	}
+	@include respond('phone'){
+		padding: 30px 30px 0px;
+		.counter-box{
+			.title {
+				font-size: 42px;
+			}
+			p {
+				font-size: 15px;
+			}
+		}
+	}
+}
+
+.counter-inner-2 {
+	text-align: center;
+	
+	.title,
+	span{
+		font-size: 80px;
+		font-family: $font-family-base;
+		display: flex;
+		font-weight: 700;
+		line-height: 1.2;
+		justify-content: center;
+		color: var(--primary);
+		margin-bottom: 0;
+	}
+	p{
+		font-size: 18px;
+		font-weight: 600;
+	}
+	@include respond('laptop'){
+		.title,
+		span{
+			font-size: 60px;
+		}
+		p{
+			font-size: 16px;
+		}
+	}
+	@include respond('tab-port'){
+		.title,
+		span{
+			font-size: 45px;
+		}
+	}
+	@include respond('phone-land'){
+		.title,
+		span{
+			font-size: 35px;
+		}
+	}
+}
+
+.counter-inner-3{
+	background: rgba(255, 255, 255, 0.9);
+	box-shadow: 0px 25px 70px rgba(0, 0, 0, 0.1);
+	backdrop-filter: blur(6px);
+	padding: 36px 0;
+	margin-top: -80px;
+    z-index: 9;
+    position: relative;
+	
+	@include respond('tab-port'){
+		padding: 20px 0;
+	}
+	@include respond('phone-land'){
+		margin-top: -15px;
+	}
+	@include respond('phone'){
+		margin-left: 0;
+		margin-right: 0;
+	}
+	.counter-box{
+		border-right: 1px solid rgba(0, 0, 0, 0.1);
+		
+		@include respond('phone'){
+			border-right: 0;
+		}
+		.title{
+			font-weight: 700;
+			font-size: 85px;
+			color: var(--primary);
+			margin: 0;
+
+			@include respond('tab-port'){
+				font-size: 60px;
+			}
+			
+			@include respond('phone-land'){
+				font-size: 50px;
+			}
+			
+			@include respond('phone'){
+				font-size: 40px;
+			}
+		}
+		p{
+			color: #232323;
+			font-weight: 500;
+			
+			@include respond('phone'){
+				font-size: 14px;
+			}
+		}
+	}
+}

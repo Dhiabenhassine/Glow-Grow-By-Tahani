@@ -1,0 +1,129 @@
+// Under Construction
+.under-construction{
+	overflow: hidden;
+    padding: 100px;
+    height: 100vh;
+    display: flex;
+    vertical-align: middle;
+    position: relative;
+    text-align: center;
+    flex-wrap: wrap;
+    justify-content: center;
+	align-items: center;
+	
+	p{
+		font-size:35px;
+		font-weight: 300;
+		font-family: 'Oswald', sans-serif;
+		letter-spacing: 5px;
+	}
+	.dz-head{
+		margin-bottom: 15px;
+		line-height:1.1;
+		font-size: 80px;
+		font-family: 'Oswald', sans-serif;
+		font-weight: 700;
+	}
+	.warning-img{
+		width: 150px;
+		margin-bottom: 30px;
+	}
+	.shape1,
+	.shape2,
+	.shape3,
+	.shape4,
+	.shape5,
+	.girl-img{
+		position: absolute;
+	}
+	.shape1{
+		left: -20%;
+		top: -50%;
+	}
+	.shape2{
+		right: -20%;
+		bottom: -50%;
+	}
+	.shape3{
+		right: 5%;
+		top: 10%;
+	}
+	.shape4{
+		left: 15%;
+		top: 30%;
+		z-index: -1;
+	}
+	.shape5{
+		left: 50%;
+		bottom: -20px;
+		z-index: -1;
+	}
+	.girl-img{
+		left: 0;
+		bottom: 0;
+		z-index: 1;
+	}
+	@include respond('tab-land'){
+		.girl-img{
+			width: 250px;
+		}
+		.shape1{
+			left: -10%;
+			top: -10%;
+			width: 300px;
+		}
+		.shape2{
+			right: -10%;
+			bottom: -10%;
+			width: 300px;
+		}
+		.dz-head{
+			font-size: 45px;
+		}		
+		p{
+			font-size: 24px;
+		}
+		.shape3,
+		.shape4,
+		.shape5{
+			width: 50px;
+		}
+	}
+	@include respond('phone'){
+		padding: 30px;
+		
+		.dz-head {
+			font-size: 30px;
+			margin-bottom: 10px;
+		}
+		.girl-img{
+			width: 200px;
+		}
+		.warning-img{
+			width: 120px;
+			margin-bottom: 20px;
+		}
+		p{
+			font-size: 16px;
+			letter-spacing: 2px;
+		}
+		.shape1{
+			left: -30%;
+			top: -20%;
+			width: 250px;
+		}
+		.shape2{
+			right: -30%;
+			bottom: -20%;
+			width: 250px;
+		}
+	}
+	&.style-3{
+		.bg-pattern1{
+			position: absolute;
+			top: 0;
+			right: 0;
+			z-index: -1;
+		}
+	}
+}

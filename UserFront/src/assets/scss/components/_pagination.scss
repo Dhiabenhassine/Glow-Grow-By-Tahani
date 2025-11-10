@@ -1,0 +1,59 @@
+.pagination{
+	li{
+		margin: 0 5px;
+		.page-numbers,
+		.page-link{
+			height: 40px;
+			min-width: 40px;
+			line-height: 40px;
+			transform: skewX(-10deg);
+			border-radius: 0;
+			color: var(--primary);
+			text-align: center;
+			border: 0;
+			padding: 0;
+			transition: all 0.5s;
+			font-size: 16px;
+			padding: 0 5px;
+			display: block;
+			background-color: var(--rgba-primary-1);
+			
+			span {
+			    transform: skewX(10deg);
+			    display: inline-block;
+			}
+			&.current,
+			&.active,
+			&:hover{
+				color: $white;
+				background-color: var(--primary);
+				border-color: var(--primary);
+			}
+		}
+		@include respond ('phone'){
+			margin: 0 5px;
+		}
+		.prev,
+		.next{
+			background-color:transparent;
+			border-color: transparent;
+			font-size: 18px;
+			transform: skewX(0deg);
+			&:hover{
+				background-color:transparent;
+				box-shadow:none;
+				color:var(--primary);
+			}
+		}
+	}
+	&.text-center{
+		justify-content: center;
+	}
+	&.rounded-0{
+		.page-item{
+			.page-link{
+				border-radius: 0;
+			}
+		}
+	}				
+}

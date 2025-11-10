@@ -1,0 +1,102 @@
+.schedule-table {
+	table {
+		width: calc( 100% - 5px);
+    	text-align: center;
+    	background: var(--rgba-primary-05);
+    	thead {
+    		tr {
+    			border: none;	
+    		}
+	    	th {
+    		    height: 75px;
+    		    font-family: var(--font-family-title);
+			    background: var(--primary);
+			    color: var(--theme-text-color);
+			    font-weight: 400;
+	    	}
+    	}
+		td {
+		    height: 55px;
+		    width: 12.5%;
+		    vertical-align: middle;
+		    padding: 15px;
+		    position:relative;
+		    border: 1px solid var(--rgba-primary-2);
+		}
+		tr {
+			border: 1px solid var(--rgba-primary-2);
+		}
+	}
+
+}
+
+.table-responsive {
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+	.table-responsive-md {
+		min-width: 70rem !important;
+	}
+	.table-responsive-sm {
+		min-width: 50rem !important;
+	}
+}
+
+.event-time {
+    font-size: 14px;
+    letter-spacing: 1px;
+    background: var(--secondary);
+    color: rgba(255, 255, 255, 0.8);
+	border-bottom: 1px solid rgba(0,0,0,0.7) !important;
+	border-top: 1px solid rgba(0,0,0,0.7) !important;
+}
+.event {
+    @include transitionMedium;
+    position:absolute;
+    &:before {
+	    content: '';
+	    position: absolute;
+	    left: 0;
+	    top: 100%;
+	    width: 100%;
+	    height: 0;
+	    opacity: 0;
+	    border-left: 0px solid transparent;
+	    border-right: 150px solid transparent;
+	    border-top: 10px solid var(--primary);
+	    clear: both;
+    	@include transitionMedium;
+	}
+	&:after {
+	    
+	}
+	.event-tag {
+		position: absolute;
+	    opacity: 0;
+	    top: 0px;
+	    transform: translateY(-100%);
+	    left: 0;
+	    width: 100%;
+	    background: #000;
+	    color: #fff;
+	    font-size: 13px;
+	    padding:4px 0;
+	    @include transitionMedium;
+	}
+	.subtitle {
+    	display: inline-block;
+    	font-size: 14px;
+    	@include transitionMedium;
+    }
+    .title {
+    	display: block;
+    	font-weight: 500;
+	}
+    &:hover {
+    	background:var(--rgba-primary-2);
+    	
+		&:before,
+		.event-tag{
+    		opacity: 1;
+    	}
+    }
+}

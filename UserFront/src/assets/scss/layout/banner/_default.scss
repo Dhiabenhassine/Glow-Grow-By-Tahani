@@ -1,0 +1,123 @@
+// dz-bnr-inr
+.dz-bnr-inr{
+    height: 450px;
+    background-size: cover;
+	background-position: center;
+	position: relative;
+    overflow: hidden;
+	z-index:1;
+	width: 100%;
+
+	@include respond('tab-port'){
+		height: 350px;
+	}
+	@include respond('phone'){
+		height: 280px;
+	}
+	.container{
+		display: table;
+		height: 100%;
+		
+	}
+	.dz-bnr-inr-entry{
+		vertical-align: middle;
+		display: table-cell;
+		
+		@include respond('phone-land'){
+			text-align:center;
+			.breadcrumb-row{
+				display:inline-block;
+			}
+		}
+	}
+	h1 {
+		margin-bottom: 0px;
+		color:#fff;
+		text-transform: capitalize;
+	}
+	
+	// height sm
+	&.dz-bnr-inr-sm{
+		height: 300px;
+		@include respond('phone'){
+			height: 250px;
+		}
+	}
+	
+	// height sm
+	&.dz-bnr-inr-md{
+		height: 450px;
+		@include respond('tab-port'){
+			height: 350px;
+		}
+		@include respond('phone'){
+			height: 300px;			
+		}
+	}
+	
+	// height lg
+	&.dz-bnr-inr-lg{
+		height: 100vh;
+	}
+	
+	&.bnr-no-img:before{
+		content:none;
+	}
+}
+.breadcrumb-row{
+	ul {
+		background: var(--primary);
+	    margin: 0;
+	    border-radius: 0;
+	    border: 0;
+	    margin-right: 12px;
+	    transform: skewX(-12deg);
+	    display: inline-block;
+	    padding: 10px 33px;
+	    @include respond('tab-port'){
+			padding: 6px 25px;
+		}
+	    &:after {
+    	    content: "";
+		    position: absolute;
+		    background-color: inherit;
+		    height: 100%;
+		    width: 7px;
+		    right: -12px;
+		    z-index: 1;
+		    top: 0;
+	    }
+		li {
+			padding: 0;
+		    transform: skewX(12deg);
+			display: inline-block;
+			font-size: 16px;
+			font-weight: 500;
+			color: $white;
+			&.active{
+				color: $white;			
+			}
+			a{
+				color: $white;
+			}
+		}
+		.breadcrumb-item + .breadcrumb-item::before{
+			content: "\f105";
+			color: #fff;
+			font-weight: 700;
+			font-family: 'Font Awesome 6 Free';
+			font-size: 14px;
+			padding-right: 10px;
+			top: 2px;
+			position: relative;
+		}
+		@include respond ('phone-land'){
+			padding: 5px 20px;
+			li{
+				font-size:14px;
+			}
+		}
+	}
+}
+
+

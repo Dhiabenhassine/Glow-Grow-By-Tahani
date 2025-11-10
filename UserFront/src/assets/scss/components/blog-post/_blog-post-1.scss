@@ -1,0 +1,290 @@
+.dz-card{
+	&.style-1{
+		box-shadow: 0px 0 50px rgba(0, 0, 0, 0.1);
+		@include transitionMedium;
+		padding: 20px;
+	    transform: skewY(-5deg);
+		margin: 30px 0 20px;
+	
+		.dz-info{
+	    	transform: skewY(5deg);
+			padding: 20px 0 0;
+			
+			p {
+				margin-bottom:25px;
+				text-transform: capitalize;
+				@include respond('tab-port'){
+					margin-bottom:20px;
+				}
+			}
+			.dz-meta {
+				margin-bottom: 12px;
+			}
+			.dz-title {
+				margin-bottom: 12px;
+			}
+			.post-author {
+				img {
+					height: 35px;
+					width: 35px;
+					border-radius: 100%;
+					margin-right: 10px;
+					@include respond('phone-land'){
+						height: 27px;
+						width: 27px;
+						margin-right: 5px;
+					}
+				}
+			}
+		}
+		.dz-media{
+	    	transform: skewY(5deg);
+			border-radius: unset;
+			margin-top: -50px;
+			.dz-badge-list{
+				position:absolute;
+				top:20px;
+				left:20px;
+			}
+			.dz-badge{
+				background-color:var(--primary);
+				color:#fff;
+				border-radius:var(--border-radius-base);
+				padding: 8px 15px;
+				font-size: 12px;
+				text-transform:uppercase;
+			}
+		}
+		&:hover {
+			box-shadow: 0px 0 50px rgba(0, 0, 0, 0.2);
+		}
+		&.blog-half {
+			transform: skewX(0deg);
+			margin: 0;
+			@include respond('phone-land'){
+				display: block;
+			}
+			.dz-info{
+				transform: skewX(0deg);
+				padding: 0 0 0 30px;
+				@include custommq ($max:1199px){
+					padding: 0 0 0 20px;
+					.dz-title {
+						font-size: 20px;
+					}
+					.dz-meta ul li:last-child {
+						display: none;
+					}
+				}
+				@include respond('phone-land'){
+					padding: 0;
+					.dz-title {
+						font-size: 18px;
+					}
+				}
+			}
+			.dz-media {
+				transform: skewX(0deg);
+				margin: 0;
+				@include custommq ($max:1199px){
+					max-width: 220px;
+    				min-width: 220px;
+				}
+				@include respond('phone-land'){
+					max-width: 100%;
+    				min-width: 100%;
+    				margin-bottom: 20px;
+				}
+			}
+		}
+	}
+	&.style-2{
+		box-shadow: 0px 0 50px rgba(0, 0, 0, 0.1);
+		background-color: transparent;
+		@include transitionMedium;
+		position: relative;
+		margin-top: 30px;
+		
+		&:after {
+			content: '';
+			position: absolute;
+			top: 0;
+			left: 0;
+			height: 100%;
+			width: 100%;
+			opacity: 1;
+			z-index: 0;
+			border: 2px solid transparent;
+			background-color: var(--secondary);
+			@include transitionMedium;
+		}
+		.post-date{
+			position: relative;
+			z-index: 1;
+			display: inline-block;
+			padding: 10px 10px;
+			text-align: center;
+			background-color: var(--primary);
+			margin: -30px 0 0px 25px;
+			color: var(--theme-text-color);
+			
+			.date{
+				font-size: 45px;
+				color: inherit;
+				margin-bottom: 0;
+				display: block;
+				line-height: 45px;
+				font-weight: 700;
+				
+				@include respond('laptop'){
+					font-size: 36px;
+				}
+			}
+			.months{
+				color: inherit;
+				font-size: 13px;
+				font-weight: 500;
+				margin-bottom: 0;
+				display: block;
+			}
+		} 
+		.dz-info{
+			padding: 20px 25px 25px 25px;
+			overflow: hidden;
+			z-index: 1;
+			position: relative;
+			
+			p{
+				margin-bottom:25px;
+				text-transform: capitalize;
+				color: #ffffffb3;
+				
+				@include respond('tab-port'){
+					margin-bottom:20px;
+				}
+			}
+			.dz-meta {
+				margin-bottom: 12px;
+				@include respond('laptop'){
+					ul li:not(:last-child) {
+						margin-right: 10px;
+						padding-right: 10px;
+					}
+				}
+				.post-author {
+					color: #fff;
+					@include respond('tab-land') {
+						font-size: 14px;
+				}
+					img {
+						height: 35px;
+						width: 35px;
+						border: 2px solid #fff;
+						border-radius: 100%;
+						margin-right: 10px;
+						@include respond('laptop'){
+							display: none;
+						}
+						@include respond('tab-land'){
+							height: 30px;
+							width: 30px;
+							display: inline-block;
+							margin-right: 5px;
+						}
+						@include respond('phone'){
+							display: none;
+						}
+					}
+					&::after {
+						background-color: #fff;
+					}
+					span {
+						color: #fff;
+					}
+				}
+				.post-comments a{
+					color: #fff;
+					@include respond('tab-land') {
+							font-size: 14px;
+					}
+				}
+			}
+			.dz-title {
+				margin-bottom: 12px;
+				a {
+					color: white;
+				}
+				@include respond('laptop'){
+					font-size: 20px;
+				}
+			}
+		}
+		.dz-media{
+			transform: skewY(5deg);
+			border-radius: unset;
+			margin-top: -50px;
+			
+			.dz-badge-list{
+				position:absolute;
+				top:20px;
+				left:20px;
+			}
+			.dz-badge{
+				background-color:var(--primary);
+				color:#fff;
+				border-radius:var(--border-radius-base);
+				padding: 8px 15px;
+				font-size: 12px;
+				text-transform:uppercase;
+			}
+		}
+		&:hover {
+			box-shadow: 0px 0 50px rgba(0, 0, 0, 0.2);
+			&:after {
+				opacity: 0.7;
+				border: 2px solid var(--primary);
+			}
+		}
+		&.blog-half {
+			transform: skewX(-10deg);
+			margin: 0 25px 0 30px;
+			
+			.dz-info{
+				transform: skewX(10deg);
+				padding: 0 0 0 30px;
+			}
+			.dz-media {
+				transform: skewX(10deg);
+				margin-top: 0;
+				margin-left: -50px;
+			}
+		}
+	}
+	&.skew-none{
+		transform: skewY(0);
+		.dz-info,
+		.dz-media{
+			transform: skewY(0);			
+		}
+	}
+}
+.swiper {
+	&.blog-slider-wrapper{
+		overflow: unset;
+		
+		.swiper-slide{
+			@include transitionMedium;
+			opacity: 0;
+			visibility: hidden!important;
+			
+			&.swiper-slide-prev,
+			&.swiper-slide-next,
+			&.swiper-slide-active{
+				opacity: 1;
+				visibility: visible!important;
+			}
+		}
+	}
+}
+
+

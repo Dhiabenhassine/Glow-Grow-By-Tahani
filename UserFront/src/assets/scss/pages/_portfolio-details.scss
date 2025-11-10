@@ -1,0 +1,200 @@
+// Portfolio Single Start ===
+.port-single-info {
+	padding: 45px 45px 10px;
+	z-index: 1;
+	position: relative;
+	
+	@include respond ('phone'){
+		padding: 30px;
+	}
+	
+	&:after,
+	&:before{
+	    content: '';
+	    position: absolute;
+	    z-index: -1;
+	    bottom: 0;
+	    right: 0;
+	    @include transitionMedium;
+	    background-size: cover;
+	    background-repeat: no-repeat;
+	}
+	&:after{
+		background-image: url(../images/background/single-box-bg.png);
+	    width: 37%;
+		height: 47%;
+		
+		@include respond ('tab-port'){
+			width: 45%;
+    		height: 26%;
+		}  
+		@include respond ('phone-land'){
+			width: 50%;
+    		height: 22%;
+		} 
+		@include respond ('phone'){
+			width: 250px;
+    		height: 15%;
+		} 
+	}
+	&:before {
+		background-image: url(../images/background/bg-pricetable-2.png);
+	    width: 150px;
+	    height: 200px;
+	    opacity: 0.2;
+	}
+	svg{
+		position: absolute;
+	    bottom: -32px;
+	    right: -22px;
+	    height: 70px;
+	    width: 250px;
+	    
+		@include respond ('tab-port'){
+			bottom: -23px;
+			right: -20px;
+			height: 50px;
+			width: 190px;
+		} 
+		@include respond ('phone'){
+		    bottom: -23px;
+		    right: -15px;
+		    height: 50px;
+		    width: 130px;
+		} 
+	}
+	.portfolio-foot{
+		&>ul{
+			display: flex;
+			width: 100%;
+			flex-wrap: wrap;
+			
+			&>li{
+				width: 25%;
+				margin-bottom: 30px;
+				
+				h6{
+					color: var(--primary);
+					font-weight: 500;
+					font-size: 15px;
+					@include custommq ($max:1199px){
+						margin-bottom: 5px;
+					}
+				}
+				.text{
+					color: $white;
+					font-size: 18px;
+					@include respond ('tab-land'){
+						font-size: 16px;
+					}
+				}
+				@include respond ('tab-port'){
+					width: 50%;
+				} 
+				@include respond ('phone'){
+					width: 100%;
+					margin-bottom: 20px;
+				} 
+			}
+		}
+	}
+	
+	.widget_getintuch{
+		margin-top: 12px;
+		margin-bottom: 0;
+
+		ul li{
+			margin-bottom: 10px;
+			padding-left: 30px;
+			
+			span{
+				font-size: 15px;
+			}
+			i{
+				font-size: 16px;
+				top: 4px;
+			}
+		}
+	}
+} 
+
+//Port Single Start ===
+.port-single-content{
+	.title {
+		font-size: 40px;
+		margin-bottom: 20px;
+		@include respond ('tab-port'){
+			font-size: 33px;			
+		}
+		@include respond ('phone'){
+			font-size: 24px;
+			margin-bottom: 10px;
+		} 
+	}
+	.text {
+		font-size: 18px;
+		@include respond ('tab-port'){
+			font-size: 16px;
+		} 
+	}
+}
+
+// Portfolio Lightgallery ===
+.dz-box {
+	&.gallery {
+		position: relative;
+		.content {
+			position: absolute;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+			background: transparent;
+			transition: all 0.4s;
+			&:after {
+			    content: '';
+			    position: absolute;
+			    height: 100%;
+				opacity: 0;
+				z-index: 0;
+			    width: 100%;
+			    bottom: 0px;
+			    left: 0px;
+			    @include transitionMedium;
+			    background: #000;
+			}
+			.view-btn {
+				z-index: 1;
+				position: absolute;
+				opacity: 0;
+				top: 50%;
+				left: 50%;
+				background-color: #fff;
+			    @include transitionMedium;
+				transform: translate(-50%, -50%) skewX(-12deg) translateY(2px);
+				cursor: pointer;
+				display: block;
+				width: 50px;
+				height: 50px;
+				text-align: center;
+				line-height: 50px;
+				font-size: 18px;
+				color: var(--title);
+
+				i{
+					transform: skewX(12deg);
+				}
+			}
+		}
+		&:hover {
+			.content {
+				.view-btn {
+					opacity: 1;
+				}
+				&:after {
+					opacity: 0.5;
+				}
+			}
+		}
+	}
+}

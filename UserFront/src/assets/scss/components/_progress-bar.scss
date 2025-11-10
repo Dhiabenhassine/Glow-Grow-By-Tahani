@@ -1,0 +1,78 @@
+// Progress Bar
+.progress-bx{
+	
+	// Style 1
+	&.style-1{
+		.progress-head{
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			
+			.title{
+				font-size: 16px;
+				font-weight: 500;
+				color: $white;
+				
+				@include respond('tab-port'){
+					font-size: 15px;
+				}
+			}
+			span{
+				font-weight: 500;
+				color: var(--primary);
+				
+				@include respond('tab-port'){
+					font-size: 15px;
+				}
+			}
+		}
+		.progress{
+			position: relative;
+			z-index: 1;
+			height: 20px;
+			border-radius: 0;
+			background-color: transparent;
+			
+			.progress-bar{
+				transform: skewX(-20deg);
+				margin-left: -4px;
+			}
+			&:after{
+				content: "";
+				position: absolute;
+				top:50%;
+				z-index: -1;
+				transform: translateY(-50%);
+				left: 0;
+				height: 1px;
+				width: 100%;
+				background: rgba(255,255,255,0.2);
+			}
+			@include respond('tab-port'){
+				height: 10px;
+			}
+		}
+	}
+}
+.progress-bar-wrapper1{
+	padding: 65px;
+    background-color: var(--secondary);
+    height: 100%;
+	
+	.progress-bx:not(:last-child){
+		margin-bottom: 40px;
+	}
+	@include respond('laptop'){
+		padding: 50px;
+	}
+	@include custommq ($max:1199px){
+		padding: 40px;
+	}
+	@include respond('phone'){
+		padding: 25px;
+		
+		.progress-bx:not(:last-child){
+			margin-bottom: 25px;
+		}
+	}
+}

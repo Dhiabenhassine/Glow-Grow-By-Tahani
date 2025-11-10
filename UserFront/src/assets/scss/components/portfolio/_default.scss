@@ -1,0 +1,93 @@
+.dz-box{
+	position:relative;
+}
+.portfolio-slider {
+
+	.swiper-slide {
+    	width:auto;
+    	@include transitionMedium;
+  	}
+  	.num-pagination {
+  		margin-top: 110px;
+  		@include custommq($max: 1199px) {
+  			margin-top: 90px;
+  		}
+  		@include respond('tab-port'){
+			margin-top: 70px;
+		}
+		@include respond('phone'){
+			margin-top: 30px;
+		}
+  	}
+}
+.portfolio-wrapper {
+	position: relative;
+    transform: skewY(-4deg);
+    background: var(--secondary);
+    margin-top: 160px;
+	z-index: 2;
+	@include respond('laptop'){
+		margin-top: 120px;
+	}
+	@include respond('phone'){
+		padding-bottom: 30px;
+		margin-top: 75px;
+	}
+	.portfolio-wrapper-inner{
+	    transform: skewY(4deg);
+	    margin-top: -200px;
+	    z-index: 1;
+	    position: relative;
+	    overflow: hidden;
+	    @include respond('tab-port'){
+			margin-top: -150px;
+		}
+		@include respond('phone'){
+			margin-top: -100px;
+		}
+	}
+	.shape-up {
+		position: absolute;
+		top: -75px;
+		transform: skewY(5.5deg);
+		left: 0;
+		@include respond('laptop'){
+			width: 450px;
+    		top: -69px;
+		}
+		@include custommq($max: 1199px) {
+		    width: 400px;
+    		top: -67px;
+		}
+		@include respond('tab-port'){
+			width: 340px;
+    		top: -65px;
+		}
+		@include respond('tab-port'){
+			width: 210px;
+    		top: -60px;
+		}
+	}
+	.shape-down {
+		position: absolute;
+		bottom: -76px;
+		right: 0;
+		transform: skewY(4deg);
+		@include respond('laptop'){
+		    width: 480px;
+    		bottom: -70px;
+		}
+		@include custommq($max: 1199px) {
+		    width: 430px;
+    		bottom: -68px;
+		}
+		@include respond('tab-port'){
+	        width: 330px;
+    		bottom: -65px;
+		}
+		@include respond('phone'){
+	       	width: 170px;
+   		 	bottom: -60px;
+		}
+	}
+}
