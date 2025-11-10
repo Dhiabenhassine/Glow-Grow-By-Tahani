@@ -14,7 +14,7 @@ async function seed() {
     const adminEmail = 'admin@example.com';
     let admin = await User.findOne({ email: adminEmail });
     if (!admin) {
-      const password_hash = await bcrypt.hash('Admin123!', 10);
+      const password_hash = await bcrypt.hash('Admin123', 10);
       admin = await User.create({
         email: adminEmail,
         password_hash,
