@@ -1,0 +1,36 @@
+export const translations = {
+  en: {
+    Home: "Home",
+    Pages: "Pages",
+    "About Us": "About Us",
+    Team: "Team",
+    "Weight Calculator": "Weight Calculator",
+    Appointment: "Appointment",
+    Packages: "Packages",
+    Services: "Services",
+    "Services Details": "Services Details",
+    "Contact Us": "Contact Us",
+    Login: "Login",
+    "Connect To Your Account": "Connect To Your Account",
+    "User Account": "User Account",
+    "Switch Language": "Switch Language",
+  },
+  ar: {
+    Home: "الرئيسية",
+    Pages: "الصفحات",
+    "About Us": "من نحن",
+    Team: "الفريق",
+    "Weight Calculator": "حاسبة الوزن",
+    Appointment: "موعد",
+    Packages: "الباقات",
+    Services: "الخدمات",
+    "Services Details": "تفاصيل الخدمات",
+    "Contact Us": "اتصل بنا",
+    Login: "تسجيل الدخول",
+    "Connect To Your Account": "تسجيل الدخول إلى حسابك",
+    "User Account": "حساب المستخدم",
+    "Switch Language": "تغيير اللغة",
+  },
+};
+
+

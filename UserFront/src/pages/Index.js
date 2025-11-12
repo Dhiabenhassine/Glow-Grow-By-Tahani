@@ -16,9 +16,9 @@ import Pricing from "./Pricing";
 import Faq from "./Faq";
 import Schedule from "./Schedule";
 import ErrorPage from "./ErrorPage";
-import UnderConstruction from "./UnderConstruction";
-import Portfolio from "./Portfolio";
-import PortfolioDetails from "./PortfolioDetails";
+import UnderConstruction from "./Profile";
+import Categogies from "./Categogies";
+import CategoryDetails from "./CategoryDetails";
 import Services from "./Services";
 import ServicesDetails from "./ServicesDetails";
 import BlogGrid from "./BlogGrid";
@@ -58,11 +58,11 @@ function Index() {
           <Route path="/faq" exact element={<Faq />} />
           <Route path="/pricing" exact element={<Pricing />} />
           <Route path="/schedule" exact element={<Schedule />} />
-          <Route path="/Packages" exact element={<Portfolio />} />
+          <Route path="/Packages" exact element={<Categogies />} />
           <Route
-            path="/Packages-details"
+            path="/Packages-details/:id"
             exact
-            element={<PortfolioDetails />}
+            element={<CategoryDetails />}
           />
           <Route path="/services" exact element={<Services />} />
           <Route path="/services-details" exact element={<ServicesDetails />} />

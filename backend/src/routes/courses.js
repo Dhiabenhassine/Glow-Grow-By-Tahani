@@ -19,10 +19,10 @@ router.get('/categories', async (req, res, next) => {
     next(err);
   }
 });
-router.get('/categories/:slug/packs', async (req, res, next) => {
+router.get('/categories/:_id/packs', async (req, res, next) => {
   try {
     const { Category, Pack } = getDb();
-    const category = await Category.findOne({ slug: req.params.slug }).lean();
+    const category = await Category.findOne({ _id: req.params._id }).lean();
     if (!category) return res.status(404).json({ error: 'Catégorie introuvable' });
 
     const packs = await Pack.find({ category_id: category._id, is_published: true })

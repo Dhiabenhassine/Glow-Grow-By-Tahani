@@ -19,8 +19,20 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
 app.use(bodyParser.json())
-const CORS_ORIGIN = process.env.CORS_ORIGIN || 'http://localhost:3000';
-app.use(cors({ origin: CORS_ORIGIN, credentials: true }));
+const allowedOrigins = [
+  'http://localhost:3000',
+  'http://localhost:3001'
+];
+
+app.use(cors({
+  origin: (origin, callback) => {
+    if (!origin) return callback(null, true); // allow non-browser requests
+    if (allowedOrigins.includes(origin)) return callback(null, true);
+    return callback(new Error('Not allowed by CORS'));
+  },
+  credentials: true,
+}));
+
 
 await initDb();
 

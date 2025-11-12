@@ -1,0 +1,96 @@
+.page-wrapper {
+    min-height: 100vh;
+    padding: 3rem;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: #000;
+    background-repeat: no-repeat;
+    background-size: cover;
+  }
+  
+  .inner-construction {
+    max-width: 600px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+  
+  .card {
+    background-color: rgba(255, 255, 255, 0.95);
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border: 2px solid #e0e0e0;
+    text-align: left;
+  }
+  
+  .card p.label {
+    font-size: 1rem;
+    color: #999;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 0.5rem;
+  }
+  
+  .card h2, .card p.value {
+    font-size: 1.75rem;
+    font-weight: 600;
+    color: #333;
+    margin: 0;
+    word-break: break-word;
+  }
+  
+  .card p.value {
+    font-size: 1rem;
+    font-weight: normal;
+    color: #333;
+  }
+  
+  .subscription-info {
+    padding: 1.5rem;
+  }
+  
+  @media (max-width: 768px) {
+    .inner-construction {
+      max-width: 90vw;
+    }
+  
+    .card {
+      padding: 1rem;
+    }
+  
+    .card h2 {
+      font-size: 1.5rem;
+    }
+  
+    .card p.value {
+      font-size: 0.9rem;
+    }
+  
+    .page-wrapper {
+      padding: 2rem 1rem;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .inner-construction {
+      gap: 1rem;
+    }
+  
+    .card {
+      padding: 0.8rem;
+    }
+  
+    .card h2 {
+      font-size: 1.25rem;
+    }
+  
+    .card p.value {
+      font-size: 0.85rem;
+    }
+  }
+  

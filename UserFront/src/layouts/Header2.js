@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useState, useEffect, useReducer, useMemo } from "react"
-import { Link, useLocation ,useNavigate } from "react-router-dom"
+import { Link, useLocation, useNavigate } from "react-router-dom"
 import { IMAGES } from "../constants/theme"
 
 import Collapse from "react-bootstrap/Collapse"
@@ -74,12 +74,44 @@ export const Mainheader = () => {
     setIsLoggedIn(loggedIn)
   }, [location.pathname])
 
-  const handleUserClick = (e) => {
+  const handleUserClick = async (e) => {
     e.preventDefault()
-    if (isLoggedIn) {
-      navigate("/Profile") // ✅ redirect to profile page
-    } else {
-      navigate("/login") // ❌ redirect to login if not logged in
+    const token = localStorage.getItem("token")
+    
+    if (!token) {
+      // No token, go to login
+      localStorage.removeItem("isLoggedIn")
+      localStorage.removeItem("user")
+      navigate("/login")
+      return
+    }
+
+    // Verify token is valid before redirecting
+    try {
+      const API_BASE = process.env.REACT_APP_API_BASE_URL || "http://localhost:4000/api";
+      const res = await fetch(`${API_BASE}/users/me`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      })
+
+      if (!res.ok) {
+        // Token is invalid or expired
+        const err = await res.json()
+        throw new Error(err.error || "Token invalid")
+      }
+
+      // Token is valid, redirect to profile
+      navigate("/Profile")
+    } catch (err) {
+      // Token expired or invalid - clear storage and redirect to login
+      localStorage.removeItem("isLoggedIn")
+      localStorage.removeItem("user")
+      localStorage.removeItem("token")
+      setIsLoggedIn(false)
+      navigate("/login")
     }
   }
   // Menu dropdown list
@@ -144,18 +176,18 @@ export const Mainheader = () => {
             {/* <!-- Extra Nav --> */}
                <div className="extra-nav">
             <div className="extra-cell">
-              {/* ✅ User icon button */}
-              <button
+             
+            <button
                   type="button"
                   onClick={handleUserClick}
                   className="btn btn-skew appointment-btn d-none d-sm-block"
                   style={{ background: "none", border: "none", cursor: "pointer" }}
+                  aria-label={("User Account")}
                 >
                   <i className="fa-solid fa-user" style={{ color: "#000000ff" }}></i>
                 </button>
-
               <Link to={"/appointment"} className="btn btn-primary btn-skew appointment-btn">
-                <span>Appointment</span>
+                <span>{("Appointment")}</span>
               </Link>
             </div>
           </div>
@@ -198,7 +230,7 @@ export const Mainheader = () => {
 
                         key={index}
                       >
-                        <Link to={item.to}>{item.title}</Link>
+                        <Link to={item.to}>{(item.title)}</Link>
                       </li>
                     )
                   } else {
@@ -218,7 +250,7 @@ export const Mainheader = () => {
                                 handleMenuActive(item.title)
                               }}
                             >
-                              {item.title}
+                              {(item.title)}
                             </Link>
                             <Collapse in={state.active === item.title ? true : false}>
                               <ul className={`sub-menu ${menuClass === "mm-collapse" ? "open" : ""}`}>
@@ -238,7 +270,7 @@ export const Mainheader = () => {
                                                 handleSubmenuActive(data.title)
                                               }}
                                             >
-                                              {data.title}
+                                              {(data.title)}
                                               <i className="fa fa-angle-right" />
                                             </Link>
                                             <Collapse in={state.activeSubmenu === data.title ? true : false}>
@@ -248,7 +280,7 @@ export const Mainheader = () => {
                                                     return (
                                                       <>
                                                         <li key={index}>
-                                                          <Link to={data.to}>{data.title}</Link>
+                                                          <Link to={data.to}>{(data.title)}</Link>
                                                         </li>
                                                       </>
                                                     )
@@ -257,7 +289,7 @@ export const Mainheader = () => {
                                             </Collapse>
                                           </>
                                         ) : (
-                                          <Link to={data.to}>{data.title}</Link>
+                                          <Link to={data.to}>{(data.title)}</Link>
                                         )}
                                       </li>
                                     )
@@ -266,7 +298,7 @@ export const Mainheader = () => {
                             </Collapse>
                           </>
                         ) : (
-                          <Link to={item.to}>{item.title}</Link>
+                          <Link to={item.to}>{(item.title)}</Link>
                         )}
                       </li>
                     )
@@ -300,8 +332,9 @@ export const Mainheader = () => {
               <div className="mobile-login-button d-sm-none mt-3 pt-3 border-top">
                 <Link to={"/login"} className="btn btn-skew appointment-btn w-100">
                   <i className="fa-solid fa-user" style={{ color: "#FFD43B" }}></i>
-                  <span>Login</span>
+                  <span>{("Login")}</span>
                 </Link>
+               
               </div>
             </div>
           </div>

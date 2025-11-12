@@ -1,13 +1,13 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "../assets/css/App.css";
+
 const API_URL = "http://localhost:4000/api/auth";
 
-
 const App = () => {
-  const [username, setUsername] = useState("");
+  const [name, setName] = useState("");       // For signup name input
+  const [email, setEmail] = useState("");     // For email input
   const [password, setPassword] = useState("");
-  const [email, setEmail] = useState("");
   const [isSignup, setIsSignup] = useState(false);
   const [message, setMessage] = useState("");
 
@@ -24,7 +24,7 @@ const App = () => {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            name: username,
+            name,
             email,
             password,
           }),
@@ -36,10 +36,9 @@ const App = () => {
 
         setMessage(`✅ Welcome, ${data.name}! Redirecting to Sign In...`);
 
-        // ✅ After signup, redirect to Sign In page
         setTimeout(() => {
           setIsSignup(false);
-          setUsername("");
+          setName("");
           setEmail("");
           setPassword("");
           navigate("/signin");
@@ -50,28 +49,26 @@ const App = () => {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            email: username, // username field used for email input
+            email,
             password,
           }),
           credentials: "include",
         });
 
         const data = await res.json();
-if (!res.ok) throw new Error(data.error || "Login failed");
+        if (!res.ok) throw new Error(data.error || "Login failed");
 
-setMessage(`✅ Logged in as ${data.name}`);
-console.log("User data:", data);
+        setMessage(`✅ Logged in as ${data.name}`);
+        console.log("User data:", data);
 
-// Save login info to localStorage
-localStorage.setItem("isLoggedIn", "true");
-localStorage.setItem("user", JSON.stringify(data.user));
-localStorage.setItem("token", data.token); // <== Save token here
+        // Save login info to localStorage
+        localStorage.setItem("isLoggedIn", "true");
+        localStorage.setItem("user", JSON.stringify(data)); // Assuming data contains user info directly
+        localStorage.setItem("token", data.token);
 
-// Redirect to /home-2
-setTimeout(() => {
-  navigate("/home-2");
-}, 1000);
-
+        setTimeout(() => {
+          navigate("/home-2");
+        }, 1000);
       }
     } catch (err) {
       setMessage(`❌ ${err.message}`);
@@ -95,27 +92,29 @@ setTimeout(() => {
           <div className="content">
             <h2>{isSignup ? "Sign Up" : "Sign In"}</h2>
             <form className="form" onSubmit={handleSubmit}>
-              <div className="inputBox">
-                <input
-                  type="text"
-                  required
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                />
-                <i>{isSignup ? "Name" : "Email"}</i>
-              </div>
-
               {isSignup && (
                 <div className="inputBox">
                   <input
-                    type="email"
+                    type="text"
                     required
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    placeholder="Name"
                   />
-                  <i>Email</i>
+                  <i>Name</i>
                 </div>
               )}
+
+              <div className="inputBox">
+                <input
+                  type="email"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="Email"
+                />
+                <i>Email</i>
+              </div>
 
               <div className="inputBox">
                 <input
@@ -123,26 +122,26 @@ setTimeout(() => {
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
+                  placeholder="Password"
                 />
                 <i>Password</i>
               </div>
 
               <div className="links">
-               <button
-  type="button"
-  onClick={() => alert("TODO: Forgot password flow")}
-  style={{
-    background: "none",
-    border: "none",
-    color: "inherit",
-    cursor: "pointer",
-    textDecoration: "underline",
-    padding: 0,
-  }}
->
-  Forgot Password?
-</button>
-
+                <button
+                  type="button"
+                  onClick={() => alert("TODO: Forgot password flow")}
+                  style={{
+                    background: "none",
+                    border: "none",
+                    color: "inherit",
+                    cursor: "pointer",
+                    textDecoration: "underline",
+                    padding: 0,
+                  }}
+                >
+                  Forgot Password?
+                </button>
 
                 {isSignup ? (
                   <Link
