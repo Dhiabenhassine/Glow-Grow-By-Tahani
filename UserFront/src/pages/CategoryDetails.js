@@ -47,7 +47,34 @@ const PackagesDetails = () => {
         
         <div className="container py-5">
           {error && <p className="text-danger">{error}</p>}
-          {loading && !error && <p>Loading pack details...</p>}
+{loading && !error && (
+  <div className="boxes" style={{ margin: "40px auto", width: "96px", height: "64px" }}>
+    <div className="box">
+      <div></div>
+      <div></div>
+      <div></div>
+      <div></div>
+    </div>
+    <div className="box">
+      <div></div>
+      <div></div>
+      <div></div>
+      <div></div>
+    </div>
+    <div className="box">
+      <div></div>
+      <div></div>
+      <div></div>
+      <div></div>
+    </div>
+    <div className="box">
+      <div></div>
+      <div></div>
+      <div></div>
+      <div></div>
+    </div>
+  </div>
+)}
 
           {!loading && !error && packs.length > 0 ? (
            
